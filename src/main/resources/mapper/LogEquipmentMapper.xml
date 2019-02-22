@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.LogEquipmentMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.LogEquipment">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="num" jdbcType="VARCHAR" property="num" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="lampnum" jdbcType="VARCHAR" property="lampnum" />
+    <result column="lampname" jdbcType="VARCHAR" property="lampname" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+  </resultMap>
+  
+  <sql id="BaseSql">
+  	select
+  		id,num,content,lampnum,lampname,ctime,result
+  	from
+  		log_equipment
+  </sql>
+  
+  <select id="selectAllByFilter" resultMap="BaseResultMap">
+  	<include refid="BaseSql" />
+  	<where>
+  	  <if test="sDate != null">
+  	  	and ctime &gt;= #{sDate}
+  	  </if>
+  	  <if test="eDate != null">
+  	    and ctime &lt;= #{eDate}
+  	  </if>
+  	  <if test="sc != null and sc != ''">
+  	    and lampnum like CONCAT('%',#{sc},'%')
+  	    or lampname like CONCAT('%',#{sc},'%')
+  	  </if>
+  	</where>
+  </select>
+</mapper>

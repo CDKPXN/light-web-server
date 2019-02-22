@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.NodeUserMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.NodeUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="nodeid" jdbcType="INTEGER" property="nodeid" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  
+  <!-- 一个灯具对应多个用户时 -->
+  <resultMap type="com.company.project.vo.LightAndUsersVo" id="LightAndUsersVoMap">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="attr_belonging" jdbcType="VARCHAR" property="attrBelonging" />
+    <result column="attr_num" jdbcType="VARCHAR" property="attrNum" />
+    <result column="attr_phone" jdbcType="VARCHAR" property="attrPhone" />
+    <result column="attr_deadtime" jdbcType="TIMESTAMP" property="attrDeadtime" />
+    <result column="attr_nodeid" jdbcType="INTEGER" property="attrNodeid" />
+    <result column="attr_longitude" jdbcType="DOUBLE" property="attrLongitude" />
+    <result column="attr_latitude" jdbcType="DOUBLE" property="attrLatitude" />
+    <result column="gps_longitude" jdbcType="DOUBLE" property="gpsLongitude" />
+    <result column="gps_latitude" jdbcType="DOUBLE" property="gpsLatitude" />
+    <result column="gps_elevation" jdbcType="INTEGER" property="gpsElevation" />
+    <result column="gps_lock" jdbcType="TINYINT" property="gpsLock" />
+    <result column="4g_signal" jdbcType="VARCHAR" property="fgSignal" />
+    <result column="4g_iccid" jdbcType="VARCHAR" property="fgIccid" />
+    <result column="total_electricity" jdbcType="INTEGER" property="totalElectricity" />
+    <result column="lamps_electricity" jdbcType="INTEGER" property="lampsElectricity" />
+    <result column="total_voltage" jdbcType="INTEGER" property="totalVoltage" />
+    <result column="lamps_voltage" jdbcType="INTEGER" property="lampsVoltage" />
+    <result column="temperature" jdbcType="INTEGER" property="temperature" />
+    <result column="fault_indicate" jdbcType="INTEGER" property="faultIndicate" />
+    <result column="day_indicate" jdbcType="INTEGER" property="dayIndicate" />
+    <result column="heartfrequency" jdbcType="INTEGER" property="heartfrequency" />
+    <result column="lamp_day_frequency" jdbcType="INTEGER" property="lampDayFrequency" />
+    <result column="lamp_night_frequency" jdbcType="INTEGER" property="lampNightFrequency" />
+    <result column="lamp_day_state" jdbcType="INTEGER" property="lampDayState" />
+    <result column="lamp_night_state" jdbcType="INTEGER" property="lampNightState" />
+    <result column="lamp_buzzer_day" jdbcType="INTEGER" property="lampBuzzerDay" />
+    <result column="lamp_buzzer_night" jdbcType="INTEGER" property="lampBuzzerNight" />
+    <result column="set_day_frequency" jdbcType="INTEGER" property="setDayFrequency" />
+    <result column="set_night_frequency" jdbcType="INTEGER" property="setNightFrequency" />
+    <result column="set_day_state" jdbcType="INTEGER" property="setDayState" />
+    <result column="set_night_state" jdbcType="INTEGER" property="setNightState" />
+    <result column="set_day_buzzer" jdbcType="INTEGER" property="setDayBuzzer" />
+    <result column="set_night_buzzer" jdbcType="INTEGER" property="setNightBuzzer" />
+    <result column="set_heartfrequency" jdbcType="INTEGER" property="setHeartfrequency" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="heartupdatetime" jdbcType="TIMESTAMP" property="heartupdatetime" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <collection property="users" ofType="com.company.project.model.User">
+      <id column="uid" jdbcType="INTEGER" property="id" />
+	    <result column="realname" jdbcType="VARCHAR" property="realname" />
+	    <result column="duty" jdbcType="VARCHAR" property="duty" />
+	    <result column="company" jdbcType="VARCHAR" property="company" />
+	    <result column="phone" jdbcType="VARCHAR" property="phone" />
+	    <result column="email" jdbcType="VARCHAR" property="email" />
+	    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    </collection>
+  </resultMap>
+  
+  
+  <select id="selectLightAndUsersByNum" resultMap="LightAndUsersVoMap">
+    SELECT l.id,l.4g_iccid,l.4g_signal,l.attr_belonging,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,
+		l.attr_phone,l.day_indicate,l.fault_indicate,l.gps_elevation,l.gps_latitude,l.gps_lock,l.gps_longitude,l.heartfrequency,
+		l.heartupdatetime,l.lamps_electricity,l.lamps_voltage,l.lamp_buzzer_day,l.lamp_buzzer_night,l.lamp_day_frequency,
+		l.lamp_day_state,l.lamp_night_frequency,l.lamp_night_state,l.set_day_buzzer,l.set_day_frequency,l.set_day_state,
+		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
+		l.total_voltage,u.id uid,u.realname,u.duty,u.company,u.phone,u.email,u.comment
+ 		from node_user nu, user u, light l where l.attr_nodeid = nu.nodeid and u.id = nu.userid and l.attr_num = #{num}
+  </select>
+</mapper>
