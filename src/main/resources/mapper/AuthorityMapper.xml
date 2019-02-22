@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.AuthorityMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.Authority">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="nodeid" jdbcType="INTEGER" property="nodeid" />
+    <result column="authority" jdbcType="INTEGER" property="authority" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  
+  <sql id="BaseSql">
+    select id,uid,nodeid,authority,ctime,updatetime from authority
+  </sql>
+  
+  <select id="selectAuthorityByUid"	resultMap="BaseResultMap">
+  	<include refid="BaseSql" />
+  	<where>
+  	  and uid = #{uid}
+  	</where>
+  </select>
+  
+  <select id="selectNodeidsByUid" resultType="Integer">
+  	select nodeid from authority
+  	<where>
+  	  and uid = #{uid}
+  	</where>
+  </select>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.LightMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.Light">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="attr_name" jdbcType="VARCHAR" property="attrName" />
+    <result column="attr_num" jdbcType="VARCHAR" property="attrNum" />
+    <result column="attr_phone" jdbcType="VARCHAR" property="attrPhone" />
+    <result column="attr_deadtime" jdbcType="TIMESTAMP" property="attrDeadtime" />
+    <result column="attr_nodeid" jdbcType="INTEGER" property="attrNodeid" />
+    <result column="attr_longitude" jdbcType="DOUBLE" property="attrLongitude" />
+    <result column="attr_latitude" jdbcType="DOUBLE" property="attrLatitude" />
+    <result column="gps_longitude" jdbcType="DOUBLE" property="gpsLongitude" />
+    <result column="gps_latitude" jdbcType="DOUBLE" property="gpsLatitude" />
+    <result column="gps_elevation" jdbcType="INTEGER" property="gpsElevation" />
+    <result column="gps_lock" jdbcType="TINYINT" property="gpsLock" />
+    <result column="4g_signal" jdbcType="VARCHAR" property="fgSignal" />
+    <result column="4g_iccid" jdbcType="VARCHAR" property="fgIccid" />
+    <result column="total_electricity" jdbcType="INTEGER" property="totalElectricity" />
+    <result column="lamps_electricity" jdbcType="INTEGER" property="lampsElectricity" />
+    <result column="total_voltage" jdbcType="INTEGER" property="totalVoltage" />
+    <result column="lamps_voltage" jdbcType="INTEGER" property="lampsVoltage" />
+    <result column="temperature" jdbcType="INTEGER" property="temperature" />
+    <result column="fault_indicate" jdbcType="INTEGER" property="faultIndicate" />
+    <result column="day_indicate" jdbcType="INTEGER" property="dayIndicate" />
+    <result column="heartfrequency" jdbcType="INTEGER" property="heartfrequency" />
+    <result column="lamp_day_frequency" jdbcType="INTEGER" property="lampDayFrequency" />
+    <result column="lamp_night_frequency" jdbcType="INTEGER" property="lampNightFrequency" />
+    <result column="lamp_day_state" jdbcType="INTEGER" property="lampDayState" />
+    <result column="lamp_night_state" jdbcType="INTEGER" property="lampNightState" />
+    <result column="lamp_buzzer_day" jdbcType="INTEGER" property="lampBuzzerDay" />
+    <result column="lamp_buzzer_night" jdbcType="INTEGER" property="lampBuzzerNight" />
+    <result column="set_day_frequency" jdbcType="INTEGER" property="setDayFrequency" />
+    <result column="set_night_frequency" jdbcType="INTEGER" property="setNightFrequency" />
+    <result column="set_day_state" jdbcType="INTEGER" property="setDayState" />
+    <result column="set_night_state" jdbcType="INTEGER" property="setNightState" />
+    <result column="set_day_buzzer" jdbcType="INTEGER" property="setDayBuzzer" />
+    <result column="set_night_buzzer" jdbcType="INTEGER" property="setNightBuzzer" />
+    <result column="set_heartfrequency" jdbcType="INTEGER" property="setHeartfrequency" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="heartupdatetime" jdbcType="TIMESTAMP" property="heartupdatetime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+  </resultMap>
+  
+  <sql id="BaseSql">
+  	select id,attr_name,attr_num,attr_phone,attr_deadtime,attr_nodeid,attr_longitude,attr_latitude,
+  			gps_longitude,gps_latitude,gps_elevation,gps_lock,4g_signal,4g_iccid,total_electricity,lamps_electricity,
+  			total_voltage,lamps_voltage,temperature,fault_indicate,day_indicate,heartfrequency,lamp_day_frequency,
+  			lamp_night_frequency,lamp_day_state,lamp_night_state,lamp_buzzer_day,lamp_buzzer_night,set_day_frequency,
+  			set_night_frequency,set_day_state,set_night_state,set_day_buzzer,set_night_buzzer,set_heartfrequency,ctime,
+  			heartupdatetime,updatetime,is_del from light
+  </sql>
+  
+  <select id="selectLightByAttrNum" resultMap="BaseResultMap">
+    <include refid="BaseSql" />
+    <where>and attr_num = #{num}</where>
+  </select>
+  
+  <select id="selectAllLights" resultMap="BaseResultMap">
+  	select
+  		l.id,l.4g_iccid,l.4g_signal,l.attr_name,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,
+		l.attr_phone,l.day_indicate,l.fault_indicate,l.gps_elevation,l.gps_latitude,l.gps_lock,l.gps_longitude,l.heartfrequency,
+		l.heartupdatetime,l.lamps_electricity,l.lamps_voltage,l.lamp_buzzer_day,l.lamp_buzzer_night,l.lamp_day_frequency,
+		l.lamp_day_state,l.lamp_night_frequency,l.lamp_night_state,l.set_day_buzzer,l.set_day_frequency,l.set_day_state,
+		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
+		l.total_voltage 
+	from 
+		light l,node n
+	<where>
+	  and l.attr_nodeid = n.id and n.id in 
+	  <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+	  	#{nodeid}
+	  </foreach>
+	  <if test="searchcontent != null and searchcontent != ''">
+	  	and n.nodename like CONCAT('%',#{searchcontent},'%')
+	  	or l.attr_name like concat('%',#{searchcontent},'%')
+	  </if>
+	</where>
+  </select>
+  
+  <!-- 通过nodeis查询灯具信息 -->
+  <select id="selectLightsByNodeids" resultMap="BaseResultMap">
+  	<include refid="BaseSql" />
+  	<where>
+  	  and attr_nodeid in
+  	  <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+  	  	#{nodeid}
+  	  </foreach>
+  	</where>
+  </select>
+  
+  <select id="selectLightsByNodeidAndsearch" resultMap="BaseResultMap">
+  	select
+  		l.id,l.4g_iccid,l.4g_signal,l.attr_name,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,
+		l.attr_phone,l.day_indicate,l.fault_indicate,l.gps_elevation,l.gps_latitude,l.gps_lock,l.gps_longitude,l.heartfrequency,
+		l.heartupdatetime,l.lamps_electricity,l.lamps_voltage,l.lamp_buzzer_day,l.lamp_buzzer_night,l.lamp_day_frequency,
+		l.lamp_day_state,l.lamp_night_frequency,l.lamp_night_state,l.set_day_buzzer,l.set_day_frequency,l.set_day_state,
+		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
+		l.total_voltage 
+	from 
+		light l,node n
+	<where>
+	  and l.attr_nodeid = n.id and n.id in 
+	  <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+	  	#{nodeid}
+	  </foreach>
+	  <if test="searchcontent != null and searchcontent != ''">
+	  	and l.attr_num like CONCAT('%',#{searchcontent},'%')
+	  </if>
+	</where>
+  </select>
+</mapper>
