@@ -13,7 +13,7 @@ public class Light {
     private Integer id;
 
     /**
-     * 归属名称
+     * 灯具名称
      */
     @Column(name = "attr_name")
     private String attrName;

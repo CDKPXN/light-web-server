@@ -1,6 +1,7 @@
 package com.company.project.core;
 
-import org.apache.commons.codec.binary.Base64;
+
+import java.util.Base64;
 
 import com.alibaba.fastjson.JSON;
 
@@ -21,12 +22,13 @@ public class ResultGenerator {
     public static <T> Result<T> genSuccessResult(T data) {
     	
     	String jsondata = JSON.toJSONString(data);
-    	String encodejsondata = Base64.encodeBase64String(jsondata.getBytes());
+//    	String encodejsondata = Base64.encodeBase64String(jsondata.getBytes());
+    	String encodeData = Base64.getEncoder().encodeToString(jsondata.getBytes());
     	
         return new Result()
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
-                .setData(encodejsondata);
+                .setData(encodeData);
     }
 
     public static Result genFailResult(String message) {
