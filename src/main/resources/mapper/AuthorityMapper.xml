@@ -30,4 +30,8 @@
   	  and uid = #{uid}
   	</where>
   </select>
+  
+  <delete id="deleteByUserId" parameterType="Integer">
+     delete from authority where uid = #{uid}
+  </delete>
 </mapper>

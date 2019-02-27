@@ -14,4 +14,32 @@
     <result column="is_del" jdbcType="TINYINT" property="isDel" />
     <result column="result" jdbcType="VARCHAR" property="result" />
   </resultMap>
+  
+  <sql id="BaseSql">
+       select 
+              source,target,data_type,content,ctime,result
+       from
+              devicedata
+  </sql>
+  
+  <select id="findAllData" resultMap="BaseResultMap" >
+        <include refid="BaseSql"></include>
+         <where>
+               <if test="dataType!=null">
+                      and data_type = #{dataType} 
+               </if>
+               <if test="startTime!=null ">
+                      and ctime &gt;=  #{startTime}
+               </if>
+               <if test="endTime!=null ">
+                       and ctime &lt;=  #{startTime}
+               </if>
+               <if test="sourceOrTarger!=null and sourceOrTarger!=''">
+                   and source like CONCAT('%',#{sourceOrTarger},'%') 
+                   or target like CONCAT('%',#{sourceOrTarger},'%')
+               </if>
+              
+         </where>
+         
+  </select>
 </mapper>

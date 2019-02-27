@@ -15,4 +15,6 @@ public interface NodeUserMapper extends Mapper<NodeUser> {
 	 * @return
 	 */
 	public LightAndUsersVo selectLightAndUsersByNum(@Param("num")String num);
+
+	public void deleteByUserId(@Param("uid")Integer id);
 }

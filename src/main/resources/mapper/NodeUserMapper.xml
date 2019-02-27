@@ -73,4 +73,8 @@
 		l.total_voltage,u.id uid,u.realname,u.duty,u.company,u.phone,u.email,u.comment
  		from node_user nu, user u, light l where l.attr_nodeid = nu.nodeid and u.id = nu.userid and l.attr_num = #{num}
   </select>
+  
+  <delete id="deleteByUserId" parameterType="Integer">
+        delete from node_user where userid = #{uid}
+  </delete>
 </mapper>

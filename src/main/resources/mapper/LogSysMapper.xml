@@ -13,4 +13,30 @@
     <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
     <result column="result" jdbcType="VARCHAR" property="result" />
   </resultMap>
+  
+  <sql id="BaseSql">
+  		select 
+  		      num,content,ipaddress,operator,result,ctime
+  		from
+  		      log_sys  
+  
+  </sql>
+  
+  <select id="findByFilter" resultMap="BaseResultMap">
+  	<include refid="BaseSql"></include>
+     <where>
+        <if test="startTime != null">
+        	and ctime &gt;= startTime
+        </if>
+        <if test="endTime != null">
+        	and ctime &lt;= endTime
+        </if>
+        <if test="searchContent != null">
+         	and num like CONCAT('%',#{searchContent},'%')
+         	or operator like CONCAT('%',#{searchContent},'%')
+        </if>
+     
+     
+     </where>
+  </select>
 </mapper>

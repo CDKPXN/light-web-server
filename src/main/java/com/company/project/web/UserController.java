@@ -4,6 +4,7 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.User;
 import com.company.project.service.UserService;
+import com.company.project.vo.UserVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -28,24 +29,21 @@ public class UserController {
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
-    public Result add(@RequestBody User user) {
-        userService.save(user);
+    public Result add(@RequestBody UserVo user) {
+    	LOG.info("添加新用户",user);
+        userService.add(user);
         return ResultGenerator.genSuccessResult();
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         LOG.info("删除id={}的用户",id);
-        User user = new User();
-        user.setId(id);
-        user.setIsDel(true);
-        userService.update(user);
-        LOG.info("删除后user={}",user);
+        userService.delete(id);
         return ResultGenerator.genSuccessResult();
     }
 
     @PutMapping
-    public Result update(@RequestBody User user) {
+    public Result update(@RequestBody UserVo user) {
     	LOG.info("修改用户，user={}",user);
     	if (user == null && user.getId() == null) {
     		return ResultGenerator.genFailResult("参数错误");
@@ -61,7 +59,7 @@ public class UserController {
     @GetMapping("/{id}")
     public Result detail(@PathVariable Integer id) {
     	LOG.info("查询id={}的用户",id);
-        User user = userService.getUserById(id);
+        UserVo user = userService.getUserById(id);
         LOG.info("返回={}",user);
         return ResultGenerator.genSuccessResult(user);
     }
@@ -71,7 +69,7 @@ public class UserController {
     		String filter) {
     	LOG.info("查询所有用户,page={},size={},filter={}",page,size,filter);
     	PageHelper.startPage(page, size);
-        List<User> list = userService.findAll(filter);
+        List<User> list = userService.findByFilter(filter);
         PageInfo pageInfo = new PageInfo(list);
         LOG.info("返回={}",pageInfo);
         return ResultGenerator.genSuccessResult(pageInfo);

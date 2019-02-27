@@ -6,9 +6,14 @@ import com.company.project.model.LogSys;
 import com.company.project.service.LogSysService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,6 +24,8 @@ import java.util.List;
 public class LogSysController {
     @Resource
     private LogSysService logSysService;
+    
+    private static final Logger LOG = LoggerFactory.getLogger(LogSysController.class);
 
     @PostMapping
     public Result add(@RequestBody LogSys logSys) {
@@ -45,10 +52,13 @@ public class LogSysController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<LogSys> list = logSysService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,
+    		           @RequestParam(defaultValue = "1997-1-1") Date startTime,@RequestParam(defaultValue = "2099-12-31") Date endTime,
+    		           @RequestParam(defaultValue = "0") String searchContent) {
+        LOG.info("按条件查询系统日志  startTime={},endTime={},searchContent", startTime,endTime,searchContent);
+    	
+    	PageInfo list = logSysService.findByFilter(startTime,endTime,searchContent,page,size);
+        
+        return ResultGenerator.genSuccessResult(list);
     }
 }

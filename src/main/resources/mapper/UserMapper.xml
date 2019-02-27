@@ -21,7 +21,7 @@
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   
-  <select id="getAll" resultMap="BaseResultMap" parameterType="String">
+  <select id="findByFilter" resultMap="BaseResultMap" parameterType="String">
   	select
   		username,userpass,realname,duty,company,phone,email,comment
 	from
@@ -38,4 +38,37 @@
 	  </if>
 	</where>
   </select>
+  
+  <select id="findByUserId" resultType="com.company.project.vo.UserVo" parameterType="Integer">
+         select 
+             	u.username,u.duty,u.company,u.phone,u.email,u.comment,u.mesg_authority,a.authority
+         from 
+                user u
+         left join 
+                authority a
+         on
+         		u.id = a.uid
+  </select>
+  
+  <select id="findNode" resultType="int" parameterType="Integer">
+  		select
+  		       nodeid
+  		from
+  		       node_user
+  		where
+  		       userid = #{userId}
+  </select>
+  
+  <select id="findFatherNode" resultType="String" parameterType="Integer">
+         select
+         	   fid,nodename
+         from
+               node
+         where
+               id = #{fid}
+  </select>
+  
+  <delete id="delete" parameterType="Integer">
+         delete from user where id = #{id}
+  </delete>
 </mapper>

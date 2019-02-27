@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,10 +52,15 @@ public class DevicedataController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
-        List<Devicedata> list = devicedataService.findAll();
-        PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    public Result list(@RequestParam(defaultValue = "0") Integer dataType,@RequestParam(defaultValue = "1997-1-1") Date startTime,
+    		           @RequestParam(defaultValue = "2099-12-31") Date endTime,@RequestParam(defaultValue = "0") String sourceOrTarger,
+    		           @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size) {
+        
+        LOG.info("查询上报下发数据，dateType={}，startTime={}，endTime={}，sourceOrTarger={}",dataType,startTime,endTime,sourceOrTarger);
+        PageInfo list = devicedataService.findAllData(dataType,startTime,endTime,sourceOrTarger,page,size);
+        LOG.info("返回={}",list);      
+        return ResultGenerator.genSuccessResult(list);       
+      
+    
     }
 }
