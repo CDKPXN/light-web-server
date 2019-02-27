@@ -34,4 +34,8 @@
   <delete id="deleteByUserId" parameterType="Integer">
      delete from authority where uid = #{uid}
   </delete>
+  
+  <select id="selectOnlyAuthorityByUid" parameterType="Integer">
+  	select authority from ruthority where uid = #{uid}
+  </select>
 </mapper>

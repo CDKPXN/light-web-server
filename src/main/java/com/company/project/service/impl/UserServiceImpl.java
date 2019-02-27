@@ -52,15 +52,24 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	}
 
 	/**
-	 * 根据id查询用户详情  没写完
+	 * 根据id查询用户详情  
 	 */
 	public UserVo getUserById(Integer id) {
 		LOG.info("根据id查询用户详情 id={}",id);
-		UserVo user = userMapper.findByUserId(id);
 		
+		//根据id查user
+		User user = userMapper.findByUserId(id);
+		
+		UserVo userVo = new UserVo();
+		BeanUtils.copyProperties(user, userVo);
+		
+		userVo.setAuthority(authorityMapper.selectOnlyAuthorityByUid(id));
+		
+		//根据id查节点
 		List<Integer> nodeIds = userMapper.findNode(id);
 
-		return user;
+		userVo.setNodeids(nodeIds);
+		return userVo;
 	}
 	
 	
