@@ -68,7 +68,4 @@
                id = #{fid}
   </select>
   
-  <delete id="delete" parameterType="Integer">
-         delete from user where id = #{id}
-  </delete>
 </mapper>

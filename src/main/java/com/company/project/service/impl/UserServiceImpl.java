@@ -3,16 +3,24 @@ package com.company.project.service.impl;
 import com.company.project.dao.AuthorityMapper;
 import com.company.project.dao.NodeUserMapper;
 import com.company.project.dao.UserMapper;
+import com.company.project.model.Authority;
+import com.company.project.model.NodeUser;
 import com.company.project.model.User;
 import com.company.project.service.UserService;
 import com.company.project.vo.UserVo;
 import com.company.project.core.AbstractService;
+import com.company.project.core.ResultCode;
+import com.company.project.core.ResultGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -71,12 +79,55 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	}
 
 	@Override
-	public void add(UserVo user) {
-		LOG.info("添加新用户 id={}",user);
-		userMapper.add(user);
+	public Integer add(UserVo userVo) {
+
+		Integer authority = userVo.getAuthority();
+		List<Integer> nodeids = userVo.getNodeids();
 		
+		if (authority == null && nodeids.isEmpty()) {
+			return -1;
+		}
 		
+		try {
+			
+			User user = new User();
+			BeanUtils.copyProperties(userVo, user);
+			LOG.info("copyPropertiest之后user={}",user);
+			save(user);
+			
+			Integer uid = user.getId();
+			if (uid == null) {
+				return -2;
+			}
+			
+			List<Authority> authorities = new ArrayList<>();
+			List<NodeUser> nodeUsers = new ArrayList<>();
+			
+			nodeids.forEach(nodeid -> {
+				Authority authority2 = new Authority();
+				authority2.setAuthority(authority);
+				authority2.setNodeid(nodeid);
+				authority2.setUid(uid);
+				authority2.setCtime(new Date());
+				authorities.add(authority2);
+				
+				NodeUser nodeUser = new NodeUser();
+				nodeUser.setNodeid(nodeid);
+				nodeUser.setUserid(uid);
+				nodeUser.setCtime(new Date());
+				nodeUsers.add(nodeUser);
+			});
+			
+			authorityMapper.insertList(authorities);
+			nodeUserMapper.insertList(nodeUsers);
+		} catch (Exception e) {
+			LOG.error("添加用户时插入多张表发生异常={}",e.getMessage());
+			// 回滚事务
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return -2;
+		}
 		
+		return 0;
 	}
 	
 

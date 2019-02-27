@@ -30,6 +30,6 @@ public interface UserService extends Service<User> {
 	
 	void delete(Integer id);
 
-	void add(UserVo user);
+	Integer add(UserVo user);
 
 }

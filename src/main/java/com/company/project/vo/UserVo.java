@@ -8,6 +8,8 @@ public class UserVo extends User {
 	
 	private List<Integer> nodeids;
 
+	private Integer authority;
+
 	public List<Integer> getNodeids() {
 		return nodeids;
 	}
@@ -16,13 +18,17 @@ public class UserVo extends User {
 		this.nodeids = nodeids;
 	}
 
+	public Integer getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(Integer authority) {
+		this.authority = authority;
+	}
+
 	@Override
 	public String toString() {
-		return "UserVo [nodeids=" + nodeids + "]";
+		return "UserVo [nodeids=" + nodeids + ", authority=" + authority + ", toString()=" + super.toString() + "]";
 	}
-	
-	
-	
-	
 
 }

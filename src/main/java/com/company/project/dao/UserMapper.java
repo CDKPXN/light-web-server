@@ -27,5 +27,4 @@ public interface UserMapper extends Mapper<User> {
 
 	public void delete(@Param("id")Integer id);
 
-	public void add(@Param("user")UserVo user);
 }

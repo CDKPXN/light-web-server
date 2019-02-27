@@ -30,8 +30,20 @@ public class UserController {
 
     @PostMapping
     public Result add(@RequestBody UserVo user) {
-    	LOG.info("添加新用户",user);
-        userService.add(user);
+    	LOG.info("添加新用户={}",user);
+    	
+    	if (user == null) {
+    		return ResultGenerator.genFailResult("参数错误");
+    	}
+    	
+        Integer res = userService.add(user);
+        
+        if (res == -1) {
+        	return ResultGenerator.genFailResult("参数不正确");
+        }
+        if (res == -2) {
+        	return ResultGenerator.genFailResult("添加用户失败");
+        }
         return ResultGenerator.genSuccessResult();
     }
 
