@@ -77,4 +77,14 @@
   <delete id="deleteByUserId" parameterType="Integer">
         delete from node_user where userid = #{uid}
   </delete>
+  
+  <delete id="deleteByNodeIds">
+    delete from node_user
+    <where>
+      and nodeid in
+      <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+        #{nodeid}
+      </foreach>
+    </where>
+  </delete>
 </mapper>

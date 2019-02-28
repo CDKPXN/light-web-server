@@ -22,6 +22,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.annotation.Resource;
 
@@ -66,16 +67,23 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	
 
 	@Override
-	public void delete(Integer id) {
+	public Integer delete(Integer id) {
 	    LOG.info("根据id删除用户 id={}",id);
 	    
-	    userMapper.delete(id);
+	    try {
+	    	userMapper.deleteByPrimaryKey(id);
+		    
+		    authorityMapper.deleteByUserId(id);
+		    
+		    nodeUserMapper.deleteByUserId(id);
+		} catch (Exception e) {
+			LOG.error("删除用户发生异常={}",e.getMessage());
+			// 手动回滚事务
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return -1;
+		}
 	    
-	    authorityMapper.deleteByUserId(id);
-	    
-	    nodeUserMapper.deleteByUserId(id);
-	    
-		
+		return 0;
 	}
 
 	@Override
@@ -100,26 +108,8 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 				return -2;
 			}
 			
-			List<Authority> authorities = new ArrayList<>();
-			List<NodeUser> nodeUsers = new ArrayList<>();
+			addNodeUserAndAuthorityByNodeids(nodeids,authority,uid);
 			
-			nodeids.forEach(nodeid -> {
-				Authority authority2 = new Authority();
-				authority2.setAuthority(authority);
-				authority2.setNodeid(nodeid);
-				authority2.setUid(uid);
-				authority2.setCtime(new Date());
-				authorities.add(authority2);
-				
-				NodeUser nodeUser = new NodeUser();
-				nodeUser.setNodeid(nodeid);
-				nodeUser.setUserid(uid);
-				nodeUser.setCtime(new Date());
-				nodeUsers.add(nodeUser);
-			});
-			
-			authorityMapper.insertList(authorities);
-			nodeUserMapper.insertList(nodeUsers);
 		} catch (Exception e) {
 			LOG.error("添加用户时插入多张表发生异常={}",e.getMessage());
 			// 回滚事务
@@ -129,6 +119,89 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		
 		return 0;
 	}
+
+	/**
+	 * 修改用户
+	 */
+	public Integer updateUser(UserVo userVo) {
+		
+		User user = new User();
+		BeanUtils.copyProperties(userVo, user);
+		LOG.info("copyProperties后的user={}",user);
+		
+		try {
+			userMapper.updateByPrimaryKeySelective(user);
+			Integer uid = userVo.getId();
+			List<Integer> authorityNodeids = authorityMapper.selectNodeidsByUid(uid);
+			LOG.info("原本权限内的节点id={}",authorityNodeids);
+			List<Integer> nodeids = userVo.getNodeids();
+			LOG.info("修改过后的的节点ids={}",nodeids);
+			List<Integer> list1 = getBesidesTheIntersectionList(authorityNodeids, nodeids);
+			LOG.info("需要删除的的节点ids={}",list1);
+			if (list1 != null && !list1.isEmpty()) {
+				authorityMapper.deleteByNodeIds(list1);
+				nodeUserMapper.deleteByNodeIds(list1);
+			}
+			
+			List<Integer> list2 = getBesidesTheIntersectionList(nodeids, authorityNodeids);
+			LOG.info("需要添加的节点ids={}",list2);
+			Integer authority = userVo.getAuthority();
+			addNodeUserAndAuthorityByNodeids(list2, authority, uid);
+		} catch (Exception e) {
+			LOG.error("修改用户时发生异常={}",e.getMessage());
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();// 回滚事务
+			return -1;
+		}
+		
+		return 0;
+	}
 	
+	/**
+	 * 求list1 在 list2 中没有的集合
+	 * @param list1
+	 * @param list2
+	 * @return
+	 */
+	private List<Integer> getBesidesTheIntersectionList(List<Integer> list1, List<Integer> list2) {
+		ListIterator<Integer> iterator = list1.listIterator();
+		while (iterator.hasNext()) {
+			Integer nodeid = iterator.next();
+			boolean contains = list2.contains(nodeid);
+			if (contains) {
+				list1.remove(nodeid);
+			}
+		}
+		return list1;
+	}
+	
+	/**
+	 * 批量插入authority、nodeUser
+	 * @param list
+	 * @param authority
+	 * @param uid
+	 */
+	@Transactional
+	private void addNodeUserAndAuthorityByNodeids(List<Integer> list, Integer authority, Integer uid) {
+		List<Authority> authorities = new ArrayList<>();
+		List<NodeUser> nodeUsers = new ArrayList<>();
+		
+		list.forEach(nodeid -> {
+			Authority authority2 = new Authority();
+			authority2.setAuthority(authority);
+			authority2.setNodeid(nodeid);
+			authority2.setUid(uid);
+			authority2.setCtime(new Date());
+			authorities.add(authority2);
+			
+			NodeUser nodeUser = new NodeUser();
+			nodeUser.setNodeid(nodeid);
+			nodeUser.setUserid(uid);
+			nodeUser.setCtime(new Date());
+			nodeUsers.add(nodeUser);
+		});
+		
+		authorityMapper.insertList(authorities);
+		nodeUserMapper.insertList(nodeUsers);
+	}
 
 }

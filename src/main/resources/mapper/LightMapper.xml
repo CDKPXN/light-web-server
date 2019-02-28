@@ -113,4 +113,14 @@
 	  </if>
 	</where>
   </select>
+  
+  <delete id="deleteByNodeids">
+  	DELETE from light
+  	<where>
+  	  and attr_nodeid in
+  	  <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+  	    #{nodeid}
+  	  </foreach>
+  	</where>
+  </delete>
 </mapper>

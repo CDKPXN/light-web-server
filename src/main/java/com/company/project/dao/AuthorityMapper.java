@@ -27,4 +27,5 @@ public interface AuthorityMapper extends Mapper<Authority> {
 	void deleteByUserId(@Param("uid")Integer id);
 
 	
+	void deleteByNodeIds(@Param("nodeids")List<Integer> nodeids);
 }
