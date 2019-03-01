@@ -9,10 +9,14 @@ import com.github.pagehelper.PageInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +30,18 @@ public class LogSysController {
     private LogSysService logSysService;
     
     private static final Logger LOG = LoggerFactory.getLogger(LogSysController.class);
+    
+    /**
+	 * 自定义 日期转换
+	 * @param request
+	 * @param binder
+	 */
+	@InitBinder
+    protected void init(HttpServletRequest request, ServletRequestDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+    }
 
     @PostMapping
     public Result add(@RequestBody LogSys logSys) {

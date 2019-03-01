@@ -26,10 +26,10 @@
   	<include refid="BaseSql"></include>
      <where>
         <if test="startTime != null">
-        	and ctime &gt;= startTime
+        	and ctime &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-        	and ctime &lt;= endTime
+        	and ctime &lt;= #{endTime}
         </if>
         <if test="searchContent != null">
          	and num like CONCAT('%',#{searchContent},'%')

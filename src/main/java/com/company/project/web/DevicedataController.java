@@ -9,10 +9,14 @@ import com.github.pagehelper.PageInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +30,19 @@ public class DevicedataController {
     private DevicedataService devicedataService;
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceController.class);
+    
+    
+    /**
+	 * 自定义 日期转换
+	 * @param request
+	 * @param binder
+	 */
+	@InitBinder
+    protected void init(HttpServletRequest request, ServletRequestDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+    }
     
     @PostMapping
     public Result add(@RequestBody Devicedata devicedata) {
@@ -52,7 +69,7 @@ public class DevicedataController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer dataType,@RequestParam(defaultValue = "1997-1-1") Date startTime,
+    public Result list(@RequestParam(defaultValue = "0") Integer dataType,@RequestParam(defaultValue = "1970-1-1") Date startTime,
     		           @RequestParam(defaultValue = "2099-12-31") Date endTime,@RequestParam(defaultValue = "0") String sourceOrTarger,
     		           @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size) {
         

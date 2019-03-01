@@ -78,7 +78,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	public void delete(Integer id) {
 	    LOG.info("根据id删除用户 id={}",id);
 	    
-	    userMapper.delete(id);
+	    
 	    
 	    authorityMapper.deleteByUserId(id);
 	    
