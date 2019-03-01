@@ -4,6 +4,7 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.Node;
 import com.company.project.service.NodeService;
+import com.company.project.vo.NodeVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -29,7 +30,7 @@ public class NodeController {
 
     @PostMapping
     public Result add(@RequestBody Node node) {
-    	LOG.info("添加灯具，node={}",node);
+    	LOG.info("添加节点，node={}",node);
     	
     	if (null == node || node.getFid() == null || node.getNodename() == null) {
     		LOG.error("参数不正确");
@@ -48,13 +49,22 @@ public class NodeController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
     	LOG.info("删除id={}的节点",id);
-        nodeService.deleteNodeById(id);
+        Integer res = nodeService.deleteNodeById(id);
+        
+        if (res != 0) {
+        	return ResultGenerator.genFailResult("删除节点失败");
+        }
+        
         return ResultGenerator.genSuccessResult();
     }
 
     @PutMapping
     public Result update(@RequestBody Node node) {
     	LOG.info("修改节点node={}",node);
+    	
+    	if (node == null || node.getId() == null) {
+    		return ResultGenerator.genFailResult("参数不正确");
+    	}
         nodeService.update(node);
         LOG.info("修改之后的节点node={}",node);
         return ResultGenerator.genSuccessResult();
@@ -78,9 +88,18 @@ public class NodeController {
     
     @GetMapping
     public Result getNodes() {
-    	LOG.info("查询权限内的所有节点--返回树形结构");
-    	List<Node> nodes = nodeService.getNodeswithAuth();
+    	LOG.info("查询所有节点--返回树形结构");
+    	List<NodeVo> nodes = nodeService.getAllNodes();
     	LOG.info("返回={}",nodes);
     	return ResultGenerator.genSuccessResult(nodes);
     }
+    
+    @GetMapping("/app")
+    public Result getNodeList() {
+    	LOG.info("APP端获取省级节点列表");
+    	List<Node> nodes = nodeService.getAPPProviceNodeList();
+    	LOG.info("返回={}",nodes);
+    	return ResultGenerator.genSuccessResult(nodes);
+    }
+    
 }

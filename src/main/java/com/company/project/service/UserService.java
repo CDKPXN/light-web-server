@@ -28,8 +28,15 @@ public interface UserService extends Service<User> {
 	UserVo getUserById(Integer id);
 
 	
-	void delete(Integer id);
+	Integer delete(Integer id);
 
 	Integer add(UserVo user);
+	
+	/**
+	 * 修改用户
+	 * @param userVo
+	 * @return
+	 */
+	Integer updateUser(UserVo userVo);
 
 }

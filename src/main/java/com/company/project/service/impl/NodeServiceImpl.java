@@ -1,9 +1,13 @@
 package com.company.project.service.impl;
 
+import com.company.project.dao.AuthorityMapper;
+import com.company.project.dao.LightMapper;
 import com.company.project.dao.NodeMapper;
+import com.company.project.dao.NodeUserMapper;
 import com.company.project.model.Node;
 import com.company.project.service.LightService;
 import com.company.project.service.NodeService;
+import com.company.project.vo.NodeVo;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -14,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,29 +35,58 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
     @Resource
     private NodeMapper nodeMapper;
 
+    @Resource
+    private LightMapper lightMapper;
+    
+    @Resource
+    private NodeUserMapper nodeUserMapper;
+    
+    @Resource
+    private AuthorityMapper authorityMapper;
     
     private static final Logger LOG = LoggerFactory.getLogger(NodeServiceImpl.class);
     
 	/**
-	 * 获取权限内的所有节点，并且返回树形结构
+	 * 获取所有节点，并且返回树形结构
 	 */
-	public List<Node> getNodeswithAuth() {
-		List<Node> nodes = new ArrayList<>();
+	public List<NodeVo> getAllNodes() {
 		
+		List<NodeVo> nodeVos = nodeMapper.getAllNodesList();
 		
-		return null;
+		LOG.info("返回树形结构的节点={}",nodeVos);
+		return nodeVos;
 	}
 
 	/**
 	 * 通过id删除节点，并且删除该节点上的灯具
 	 */
-	public void deleteNodeById(Integer id) {
+	public Integer deleteNodeById(Integer id) {
 		
+		List<Integer> nodeids = new ArrayList<>();
+		List<Integer> childNodeids = getChildNodeids(nodeids, id);
 		
+		LOG.info("要删除的节点以及所有子节点={}",childNodeids);
+		
+		if (childNodeids.isEmpty()) {
+			return 0;
+		}
+		
+		try {
+			lightMapper.deleteByNodeids(childNodeids);
+			nodeMapper.deleteNodeByids(childNodeids);
+			nodeUserMapper.deleteByNodeIds(childNodeids);
+			authorityMapper.deleteByNodeIds(childNodeids);
+		} catch (Exception e) {
+			LOG.error("删除节点时发生异常={}",e.getMessage());
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return -1;
+		}
+		
+		return 0;
 	}
 
 	/**
-	 * 查询该节点下的子节点
+	 * 查询该节点下的一级子节点
 	 */
 	public List<Node> getChildrenNodes(Integer id) {
 		Condition condition = new Condition(Node.class);
@@ -123,4 +157,16 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 		}
 		return nodeids;
 	}
+
+	/**
+	 * APP端-返回所有的省级节点
+	 */
+	public List<Node> getAPPProviceNodeList() {
+		Condition condition = new Condition(Node.class);
+		Criteria criteria = condition.createCriteria();
+		criteria.andEqualTo("fid", -1);
+		List<Node> nodes = nodeMapper.selectByCondition(condition);
+		return nodes;
+	}
+	
 }

@@ -50,21 +50,27 @@ public class UserController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         LOG.info("删除id={}的用户",id);
-        userService.delete(id);
+        Integer res = userService.delete(id);
+        
+        if (res != 0) {
+        	return ResultGenerator.genFailResult("删除用户失败");
+        }
         return ResultGenerator.genSuccessResult();
     }
 
     @PutMapping
-    public Result update(@RequestBody UserVo user) {
-    	LOG.info("修改用户，user={}",user);
-    	if (user == null && user.getId() == null) {
+    public Result update(@RequestBody UserVo userVo) {
+    	LOG.info("修改用户，user={}",userVo);
+    	if (userVo == null || userVo.getId() == null) {
     		return ResultGenerator.genFailResult("参数错误");
     	}
     	
-    	Date now = new Date();
-    	user.setUpdatetime(now);
-        userService.update(user);
-        LOG.info("修改过后user={}",user);
+    	Integer res = userService.updateUser(userVo);
+    	
+    	if (res != 0) {
+    		return ResultGenerator.genFailResult("修改用户失败");
+    	}
+    	
         return ResultGenerator.genSuccessResult();
     }
 

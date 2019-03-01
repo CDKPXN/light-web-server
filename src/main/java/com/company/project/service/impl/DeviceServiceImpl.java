@@ -61,7 +61,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		// 插入数据表
 		Devicedata deviceData1 = getDeviceData(jsonparam, 5,"服务器",attrNum);
 		// 调用协议接口
-		String url = "http://127.0.0.1:9091/api/v1/costomer/signup";
+		String url = "http://127.0.0.1:8080/api/protocol";
 		Result result = null;
 		try {
 			result = HttpUtils.doPost(url, jsonparam);
@@ -90,6 +90,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			Integer heartfrequency2 = light2.getHeartfrequency();
 			// 设置心跳实际返回值字段
 			light3.setHeartfrequency(heartfrequency2);
+			light3.setHeartupdatetime(new Date());
 		}
 		lightMapper.updateByPrimaryKeySelective(light3);
 		
@@ -102,7 +103,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		
 		Devicedata deviceData1 = getDeviceData(param, 4,"服务器",attrNum);
 		
-		String url = "";
+		String url = "http://127.0.0.1:8080/api/protocol";
 		Result result = null;
 		try {
 			result = HttpUtils.doPost(url, param);
@@ -129,6 +130,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			String fgIccid = light.get4gIccid();
 			light2.set4gIccid(fgIccid);
 			light2.set4gSignal(fgSignal);
+			light2.setHeartupdatetime(new Date());
 			lightMapper.updateByPrimaryKeySelective(light2);
 		}
 		
@@ -141,7 +143,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		
 		Devicedata deviceData1 = getDeviceData(param, 4,"服务器",attrNum);
 		
-		String url = "";
+		String url = "http://127.0.0.1:8080/api/protocol";
 		Result result = null;
 		try {
 			result = HttpUtils.doPost(url, param);
@@ -186,7 +188,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		
 		Devicedata deviceData1 = getDeviceData(param, 5,"服务器",attrNum);
 		
-		String url = "";
+		String url = "http://127.0.0.1:8080/api/protocol";
 		Result result = null;
 		try {
 			result = HttpUtils.doPost(url, param);
@@ -216,6 +218,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			
 			light2.setLampBuzzerDay(lampBuzzerDay2);
 			light2.setLampBuzzerNight(lampBuzzerNight2);
+			light2.setHeartupdatetime(new Date());
 			lightMapper.updateByPrimaryKeySelective(light2);
 		}
 		
@@ -229,7 +232,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		String param = getParamJsonString();
 		Devicedata deviceData1 = getDeviceData(param, 5, "服务器", attrNum);
 		
-		String url = "";
+		String url = "http://127.0.0.1:8080/api/protocol";
 		
 		Result result = null;
 		try {
@@ -284,6 +287,11 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			return ;
 		}
 		
+		// 获取devicedata，并存入数据库
+		Devicedata deviceData1 = getDeviceData(lightJson, 1, attrNum, "服务器");
+		deviceData1.setResult("成功");
+		save(deviceData1);
+		
 		Light light2 = null;
 		try {
 			light2 = lightMapper.selectLightByAttrNum(attrNum);
@@ -302,17 +310,11 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			if (insertres != 1) {
 				return ;
 			}
+		} else {
+			Integer id = light2.getId();
+			light.setId(id);
+			lightMapper.updateByPrimaryKeySelective(light);
 		}
-		// 获取devicedata，并存入数据库
-		Devicedata deviceData1 = getDeviceData(lightJson, 1, attrNum, "服务器");
-		deviceData1.setResult("成功");
-		save(deviceData1);
-		
-		Integer id = light2.getId();
-		light.setId(id);
-		
-		lightMapper.updateByPrimaryKeySelective(light);
-		
 	}
 
 	@Override

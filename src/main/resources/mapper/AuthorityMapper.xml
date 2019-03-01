@@ -35,6 +35,16 @@
      delete from authority where uid = #{uid}
   </delete>
   
+  <delete id="deleteByNodeIds">
+    delete from authority
+    <where>
+      and nodeid in
+      <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
+        #{nodeid}
+      </foreach>
+    </where>
+  </delete>
+  
   <select id="selectOnlyAuthorityByUid" parameterType="Integer">
   	select authority from ruthority where uid = #{uid}
   </select>

@@ -13,6 +13,21 @@
     <result column="is_del" jdbcType="TINYINT" property="isDel" />
   </resultMap>
   
+  <resultMap type="com.company.project.vo.NodeVo" id="nodeTree">
+  	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="nodename" jdbcType="VARCHAR" property="nodename" />
+    <result column="fid" jdbcType="INTEGER" property="fid" />
+    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <collection column="id" property="children" ofType="nodeVo" select="getNodeChildren"></collection>
+  </resultMap>
+  
+  <sql id="BaseSql">
+    select id,nodename,fid,ctime,updatetime,is_del from node
+  </sql>
+  
+  
   <select id="selectChildNodeids" resultType="Integer">
   	select id from node
   	<where>
@@ -20,4 +35,27 @@
   	</where>
   </select>
   
+  <delete id="deleteNodeByids">
+    delete from node
+    <where>
+      and id in
+      <foreach collection="ids" item="id" open="(" separator="," close=")">
+        #{id}
+      </foreach>
+    </where> 
+  </delete>
+  
+  <select id="getAllNodesList" resultMap="nodeTree">
+    <include refid="BaseSql" />
+    <where>
+      and fid = -1
+    </where>
+  </select>
+  
+  <select id="getNodeChildren" resultMap="nodeTree">
+  	<include refid="BaseSql" />
+  	<where>
+  	  and fid = #{id}
+  	</where>
+  </select>
 </mapper>

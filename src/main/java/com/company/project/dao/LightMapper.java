@@ -39,4 +39,10 @@ public interface LightMapper extends Mapper<Light> {
 	 * @return
 	 */
 	public List<Light> selectLightsByNodeidAndsearch(@Param("nodeids")Set<Integer> nodeids,@Param("searchcontent")String searchcontent);
+	
+	/**
+	 * 删除一些节点下面的灯具
+	 * @param nodeids
+	 */
+	public void deleteByNodeids(@Param("nodeids") List<Integer> nodeids);
 }
