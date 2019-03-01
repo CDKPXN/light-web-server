@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.company.project.core.Mapper;
 import com.company.project.model.Authority;
-import com.company.project.vo.UserVo;
 
 public interface AuthorityMapper extends Mapper<Authority> {
 	
@@ -28,4 +27,6 @@ public interface AuthorityMapper extends Mapper<Authority> {
 
 	
 	void deleteByNodeIds(@Param("nodeids")List<Integer> nodeids);
+	
+	Integer selectOnlyAuthorityByUid(@Param("uid")Integer id);
 }

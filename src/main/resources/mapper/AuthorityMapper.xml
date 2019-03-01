@@ -44,4 +44,8 @@
       </foreach>
     </where>
   </delete>
+  
+  <select id="selectOnlyAuthorityByUid" parameterType="Integer">
+  	select authority from ruthority where uid = #{uid}
+  </select>
 </mapper>
