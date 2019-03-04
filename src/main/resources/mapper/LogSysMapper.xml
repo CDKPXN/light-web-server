@@ -16,7 +16,7 @@
   
   <sql id="BaseSql">
   		select 
-  		      num,content,ipaddress,operator,result,ctime
+  		     id,num,content,ipaddress,operator,result,ctime
   		from
   		      log_sys  
   
@@ -29,11 +29,11 @@
         	and ctime &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-        	and ctime &lt;= #{endTime}
+        	and ctime &lt;= date_add(#{endTime},interval 2 day)
         </if>
         <if test="searchContent != null">
-         	and num like CONCAT('%',#{searchContent},'%')
-         	or operator like CONCAT('%',#{searchContent},'%')
+         	and (num like CONCAT('%',#{searchContent},'%')
+         	or operator like CONCAT('%',#{searchContent},'%'))
         </if>
      
      

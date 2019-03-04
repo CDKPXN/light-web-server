@@ -28,7 +28,7 @@ public class ResultGenerator {
         return new Result()
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
-                .setData(encodeData);
+                .setData(data);
     }
 
     public static Result genFailResult(String message) {

@@ -45,7 +45,7 @@
     </where>
   </delete>
   
-  <select id="selectOnlyAuthorityByUid" parameterType="Integer">
-  	select authority from ruthority where uid = #{uid}
+  <select id="selectOnlyAuthorityByUid" resultType="Integer" parameterType="Integer">
+  	select distinct authority from authority where uid = #{uid}
   </select>
 </mapper>

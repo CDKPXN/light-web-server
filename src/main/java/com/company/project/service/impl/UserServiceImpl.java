@@ -68,6 +68,8 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		
 		//根据id查节点
 		List<Integer> nodeIds = userMapper.findNode(id);
+		
+		LOG.info("查询到的节点={}",nodeIds);
 
 		userVo.setNodeids(nodeIds);
 		return userVo;
@@ -130,7 +132,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	}
 
 	/**
-	 * 修改用户
+	 * 修改用户+
 	 */
 	public Integer updateUser(UserVo userVo) {
 		

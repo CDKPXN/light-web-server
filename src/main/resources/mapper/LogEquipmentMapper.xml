@@ -31,8 +31,8 @@
   	    and ctime &lt;= #{eDate}
   	  </if>
   	  <if test="sc != null and sc != ''">
-  	    and lampnum like CONCAT('%',#{sc},'%')
-  	    or lampname like CONCAT('%',#{sc},'%')
+  	    and (lampnum like CONCAT('%',#{sc},'%')
+  	    or lampname like CONCAT('%',#{sc},'%'))
   	  </if>
   	</where>
   </select>
