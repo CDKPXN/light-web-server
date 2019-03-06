@@ -23,34 +23,32 @@
   
   <select id="findByFilter" resultMap="BaseResultMap" parameterType="String">
   	select
-  		username,userpass,realname,duty,company,phone,email,comment
+  		id,username,userpass,realname,duty,company,phone,email,comment
 	from
 		user
 	<where>
 	  is_del = 0
 	  <if test="filter != null and filter != ''">
 	    and
-	    	username like concat('%',#{filter},'%')
+	    	(username like concat('%',#{filter},'%')
 	    or
 	    	realname like concat('%',#{filter},'%')
 	    or
-	    	company like concat('%',#{filter},'%')
+	    	company like concat('%',#{filter},'%'))
 	  </if>
 	</where>
   </select>
   
-  <select id="findByUserId" resultType="com.company.project.vo.UserVo" parameterType="Integer">
+  <select id="findByUserId" resultMap="BaseResultMap" parameterType="Integer">
          select 
-             	u.username,u.duty,u.company,u.phone,u.email,u.comment,u.mesg_authority,a.authority
+             	id,realname,duty,company,phone,email,comment,mesg_authority
          from 
-                user u
-         left join 
-                authority a
-         on
-         		u.id = a.uid
+               user 
+         where
+               id = #{id}
   </select>
   
-  <select id="findNode" resultType="int" parameterType="Integer">
+  <select id="findNode" resultType="Integer" parameterType="Integer">
   		select
   		       nodeid
   		from
@@ -59,13 +57,6 @@
   		       userid = #{userId}
   </select>
   
-  <select id="findFatherNode" resultType="String" parameterType="Integer">
-         select
-         	   fid,nodename
-         from
-               node
-         where
-               id = #{fid}
-  </select>
+  
   
 </mapper>

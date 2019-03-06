@@ -19,9 +19,9 @@ public interface UserMapper extends Mapper<User> {
 
 	public List<User> findByFilter(@Param("filter")String filter);
 
-	public UserVo findByUserId(@Param("id")Integer id);
+	public User findByUserId(@Param("id")Integer id);
 
-	public List<Integer> findNode(@Param("id")Integer id);
+	public List<Integer> findNode(@Param("userId")Integer id);
 
 	public List<String> findFatherNode(@Param("fid")Integer nodeId);
 

@@ -35,8 +35,8 @@
                        and ctime &lt;=  #{endTime}
                </if>
                <if test="sourceOrTarger!=null and sourceOrTarger!=''">
-                   and source like CONCAT('%',#{sourceOrTarger},'%') 
-                   or target like CONCAT('%',#{sourceOrTarger},'%')
+                   and (source like CONCAT('%',#{sourceOrTarger},'%') 
+                   or target like CONCAT('%',#{sourceOrTarger},'%'))
                </if>
               
          </where>
