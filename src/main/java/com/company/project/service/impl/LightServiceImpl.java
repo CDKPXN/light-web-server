@@ -121,22 +121,8 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		}
 		
 		List<Light> lights = null;
-		boolean flag = false;
-		if (!StringUtils.isBlank(searchcontent)) {
-			flag = searchcontent.startsWith("-");
-		}
-		if (flag) {
-			// 包含-，搜索灯具编号
-			LOG.info("搜索以‘-’开头");
-			searchcontent = searchcontent.substring(1, searchcontent.length());
-			LOG.info("searchcontent={}",searchcontent);
-			lights = lightMapper.selectLightsByNodeidAndsearch(nodeSet, searchcontent);
-		} else {
-			// 不包含-,搜索省市区、线路
-			LOG.info("搜索不以‘-’开头");
-			LOG.info("searchcontent={}",searchcontent);
-			lights = lightMapper.selectAllLights(nodeSet, searchcontent);
-		}
+		LOG.info("searchcontent={}",searchcontent);
+		lights = lightMapper.selectAllLights(nodeSet, searchcontent);
 		LOG.info("lights={}",lights);
 		
 		return lights;

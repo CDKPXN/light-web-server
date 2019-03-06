@@ -92,4 +92,5 @@ public class UserController {
         LOG.info("返回={}",pageInfo);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+    
 }

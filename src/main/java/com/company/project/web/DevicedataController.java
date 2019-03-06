@@ -2,6 +2,7 @@ package com.company.project.web;
 
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.device.controller.DeviceController;
 import com.company.project.model.Devicedata;
 import com.company.project.service.DevicedataService;
 import com.github.pagehelper.PageHelper;
@@ -69,8 +70,8 @@ public class DevicedataController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer dataType,@RequestParam(defaultValue = "1970-1-1") Date startTime,
-    		           @RequestParam(defaultValue = "2099-12-31") Date endTime,@RequestParam(defaultValue = "0") String sourceOrTarger,
+    public Result list(@RequestParam Integer dataType,@RequestParam(defaultValue = "1970-1-1") Date startTime,
+    		           @RequestParam(defaultValue = "2099-12-31") Date endTime,@RequestParam String sourceOrTarger,
     		           @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size) {
         
         LOG.info("查询上报下发数据，dateType={}，startTime={}，endTime={}，sourceOrTarger={}",dataType,startTime,endTime,sourceOrTarger);

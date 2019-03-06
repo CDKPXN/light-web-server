@@ -39,6 +39,7 @@ public class DevicedataServiceImpl extends AbstractService<Devicedata> implement
 		LOG.info("分页参数，page={},pagesize={}",page, size);
 		PageHelper.startPage(page, size);
 		List<Devicedata> deviceDatas = devicedataMapper.findAllData(dataType,startTime, endTime, sourceOrTarger);
+		LOG.info("devicedata={}",deviceDatas);
         PageInfo pageInfo = new PageInfo(deviceDatas);
 		return pageInfo;
 		

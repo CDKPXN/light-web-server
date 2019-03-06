@@ -69,15 +69,15 @@
 		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
 		l.total_voltage 
 	from 
-		light l,node n
+		light l
 	<where>
-	  and l.attr_nodeid = n.id and n.id in 
+	  and l.attr_nodeid in 
 	  <foreach collection="nodeids" item="nodeid" open="(" separator="," close=")">
 	  	#{nodeid}
 	  </foreach>
 	  <if test="searchcontent != null and searchcontent != ''">
-	  	and n.nodename like CONCAT('%',#{searchcontent},'%')
-	  	or l.attr_name like concat('%',#{searchcontent},'%')
+	  	and (l.attr_num like CONCAT('%',#{searchcontent},'%')
+	  	or l.attr_name like concat('%',#{searchcontent},'%'))
 	  </if>
 	</where>
   </select>
@@ -93,6 +93,7 @@
   	</where>
   </select>
   
+  <!-- 
   <select id="selectLightsByNodeidAndsearch" resultMap="BaseResultMap">
   	select
   		l.id,l.4g_iccid,l.4g_signal,l.attr_name,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,
@@ -113,7 +114,8 @@
 	  </if>
 	</where>
   </select>
-  
+   -->
+   
   <delete id="deleteByNodeids">
   	DELETE from light
   	<where>

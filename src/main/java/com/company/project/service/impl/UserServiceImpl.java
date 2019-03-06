@@ -8,6 +8,10 @@ import com.company.project.model.NodeUser;
 import com.company.project.model.User;
 import com.company.project.service.UserService;
 import com.company.project.vo.UserVo;
+
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+
 import com.company.project.core.AbstractService;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ResultGenerator;
@@ -140,22 +144,40 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		
 		try {
 			userMapper.updateByPrimaryKeySelective(user);
+			
 			Integer uid = userVo.getId();
 			List<Integer> authorityNodeids = authorityMapper.selectNodeidsByUid(uid);
+			List<Integer> authorityNodeidsCopy = new ArrayList<>();
+			authorityNodeidsCopy.addAll(authorityNodeids);
 			LOG.info("原本权限内的节点id={}",authorityNodeids);
 			List<Integer> nodeids = userVo.getNodeids();
 			LOG.info("修改过后的的节点ids={}",nodeids);
-			List<Integer> list1 = getBesidesTheIntersectionList(authorityNodeids, nodeids);
+			
+			List<Integer> list1 = getBesidesTheIntersectionList(authorityNodeidsCopy, nodeids);
 			LOG.info("需要删除的的节点ids={}",list1);
 			if (list1 != null && !list1.isEmpty()) {
 				authorityMapper.deleteByNodeIds(list1);
 				nodeUserMapper.deleteByNodeIds(list1);
 			}
 			
+			Integer authority = userVo.getAuthority();
+			
+			if (list1.size() < authorityNodeids.size()) {
+				Condition condition = new Condition(Authority.class);
+				Criteria criteria = condition.createCriteria();
+				criteria.andEqualTo("uid", uid);
+				
+				Authority authority1 = new Authority();
+				authority1.setAuthority(authority);
+				authorityMapper.updateByConditionSelective(authority1, condition);
+			}
+			
 			List<Integer> list2 = getBesidesTheIntersectionList(nodeids, authorityNodeids);
 			LOG.info("需要添加的节点ids={}",list2);
-			Integer authority = userVo.getAuthority();
-			addNodeUserAndAuthorityByNodeids(list2, authority, uid);
+			
+			if (list2 != null && !list2.isEmpty()) {
+				addNodeUserAndAuthorityByNodeids(list2, authority, uid);
+			}
 		} catch (Exception e) {
 			LOG.error("修改用户时发生异常={}",e.getMessage());
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();// 回滚事务
@@ -177,7 +199,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 			Integer nodeid = iterator.next();
 			boolean contains = list2.contains(nodeid);
 			if (contains) {
-				list1.remove(nodeid);
+				iterator.remove();
 			}
 		}
 		return list1;
@@ -212,5 +234,5 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		authorityMapper.insertList(authorities);
 		nodeUserMapper.insertList(nodeUsers);
 	}
-
+	
 }

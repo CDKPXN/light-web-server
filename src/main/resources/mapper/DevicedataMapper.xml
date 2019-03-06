@@ -17,7 +17,7 @@
   
   <sql id="BaseSql">
        select 
-              source,target,data_type,content,ctime,result
+              id,source,target,data_type,content,ctime,result
        from
               devicedata
   </sql>
@@ -32,7 +32,7 @@
                       and ctime &gt;=  #{startTime}
                </if>
                <if test="endTime!=null ">
-                       and ctime &lt;=  #{startTime}
+                       and ctime &lt;=  #{endTime}
                </if>
                <if test="sourceOrTarger!=null and sourceOrTarger!=''">
                    and source like CONCAT('%',#{sourceOrTarger},'%') 

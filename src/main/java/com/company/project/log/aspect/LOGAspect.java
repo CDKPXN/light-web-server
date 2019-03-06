@@ -57,7 +57,7 @@ public class LOGAspect
 	public void beforeLogin() {}
 	
 	// 设备数据
-	@Pointcut("execution(public * com.company.project.web.DeviceController.*(..))")
+	@Pointcut("execution(public * com.company.project.device.controller.DeviceController.*(..))")
 	public void deviceData() {}
 	
 	@Before("deviceData()")
@@ -80,24 +80,22 @@ public class LOGAspect
 		}
 		
 		String token = request.getHeader("token");
-		boolean equipmentLog = uri.contains("cmd"); // 判断是设备日志还是系统日志，true：设备日志，false：系统日志
+//		boolean equipmentLog = uri.contains("cmd"); // 判断是设备日志还是系统日志，true：设备日志，false：系统日志
 		
-		if (equipmentLog) {
+//		if (equipmentLog) {
 			// 设备日志
-			LOG.info("--- 设备日志 ---");
-			LogEquipment logEquipment = getEquipmentLog(joinPoint, uri, method);
-			
-			setResult(result, logEquipment);
-			logEquipmentMapper.insertSelective(logEquipment);
-		} else {
+//			LOG.info("--- 设备日志 ---");
+//			LogEquipment logEquipment = getEquipmentLog(joinPoint, uri, method);
+//			
+//			setResult(result, logEquipment);
+//			logEquipmentMapper.insertSelective(logEquipment);
+//		} else {
 			// 系统日志
-			LOG.info("--- 系统日志 ---");
-			
-			LogSys sysLog = getSysLog(uri, method, token, request);
-			
-			setResult(result, sysLog);
-			logSysMapper.insertSelective(sysLog);
-		}
+		LOG.info("--- 系统日志 ---");
+		LogSys sysLog = getSysLog(uri, method, token, request);
+		setResult(result, sysLog);
+		logSysMapper.insertSelective(sysLog);
+//		}
 	}
 	
 	/**

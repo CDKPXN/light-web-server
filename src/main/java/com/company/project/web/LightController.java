@@ -88,13 +88,17 @@ public class LightController {
         
         LightAndUsersVo lightAndUserVo = lightService.findByAttrNum(num);
         
+        if (lightAndUserVo == null) {
+        	return ResultGenerator.genFailResult("改编号存在");
+        }
+        
         LOG.info("返回单个灯具和用户信息={}",lightAndUserVo);
         return ResultGenerator.genSuccessResult(lightAndUserVo);
     }
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page,
-    		@RequestParam(defaultValue = "0") Integer pagesize, 
+    		@RequestParam(defaultValue = "20") Integer pagesize, 
     		@RequestParam String searchcontent, @RequestParam Integer nodeid) {
     	
     	LOG.info("查询权限内的所有灯具，条件={},节点id={}",searchcontent,nodeid);

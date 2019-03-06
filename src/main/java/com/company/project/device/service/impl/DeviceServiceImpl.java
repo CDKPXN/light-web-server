@@ -1,10 +1,12 @@
-package com.company.project.service.impl;
+package com.company.project.device.service.impl;
 
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,12 +23,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.company.project.core.AbstractService;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
+import com.company.project.core.ResultGenerator;
 import com.company.project.dao.DevicedataMapper;
 import com.company.project.dao.LightMapper;
 import com.company.project.dao.NodeUserMapper;
+import com.company.project.device.dto.QueryDto;
+import com.company.project.device.dto.ResultDto;
+import com.company.project.device.service.DeviceService;
 import com.company.project.model.Devicedata;
 import com.company.project.model.Light;
-import com.company.project.service.DeviceService;
 import com.company.project.utils.Base64Utils;
 import com.company.project.utils.HttpUtils;
 import com.company.project.vo.LightAndUsersVo;
@@ -345,6 +350,45 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		lightMapper.updateByPrimaryKeySelective(light);
 	}
 	
+	
+	/**
+	 * 查询
+	 */
+	public Result query(QueryDto queryDto) {
+		
+		// 判断参数是否是否正确
+		List<String> attrNums = queryDto.getAttrNum();
+		String type = queryDto.getType();
+		
+		if (attrNums.isEmpty() || StringUtils.isBlank(type)) {
+			return ResultGenerator.genFailResult("参数不正确");
+		}
+		
+		// 循环调用物联网提供的接口
+		List<ResultDto> resultDtos = doGet(queryDto);
+		
+		return ResultGenerator.genSuccessResult(resultDtos);
+	}
+	
+	/**
+	 * 循环调用 物联网提供的 接口进行查询
+	 * @param queryDto
+	 * @return
+	 */
+	private List<ResultDto> doGet(QueryDto queryDto) {
+		// 参数转换
+		
+		// 循环调用接口
+		
+		// 接收返回值，封装到list中
+		
+		return null;
+	}
+	
+	private Map<String, String> packageParam(QueryDto queryDto) {
+		return null;
+	}
+	
 	/**
 	 * 将request中的参数自动封装成JavaBean
 	 * @return
@@ -438,15 +482,8 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	 */
 	private Light getLightByAttrNum(String attrNum) {
 		// 通过编号查询灯具
-//		LightAndUsersVo lightAndUsersVo = nodeUserMapper.selectLightAndUsersByNum(attrNum);
-//		// 设置 心跳设定值字段
-//		Light light = new Light();
-//		try {
-//			BeanUtils.copyProperties(light, lightAndUsersVo);
-//		} catch (IllegalAccessException | InvocationTargetException e) {
-//			LOG.error("copyProperties 发生异常");
-//		}
 		Light light = lightMapper.selectLightByAttrNum(attrNum);
 		return light;
 	}
+
 }

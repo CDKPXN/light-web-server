@@ -58,4 +58,11 @@
   	  and fid = #{id}
   	</where>
   </select>
+  
+  <select id="selectQuanGuoId" resultType="Integer">
+    select id from node
+    <where>
+      and fid = -1
+    </where>
+  </select>
 </mapper>

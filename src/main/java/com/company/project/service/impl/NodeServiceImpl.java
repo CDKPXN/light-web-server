@@ -4,14 +4,17 @@ import com.company.project.dao.AuthorityMapper;
 import com.company.project.dao.LightMapper;
 import com.company.project.dao.NodeMapper;
 import com.company.project.dao.NodeUserMapper;
+import com.company.project.model.Authority;
 import com.company.project.model.Node;
 import com.company.project.service.LightService;
 import com.company.project.service.NodeService;
+import com.company.project.utils.TokenUtils;
 import com.company.project.vo.NodeVo;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.company.project.core.AbstractService;
 
 import org.slf4j.Logger;
@@ -22,8 +25,10 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -43,6 +48,9 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
     
     @Resource
     private AuthorityMapper authorityMapper;
+    
+    @Resource
+    private HttpServletRequest request;
     
     private static final Logger LOG = LoggerFactory.getLogger(NodeServiceImpl.class);
     
@@ -69,6 +77,22 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 		
 		if (childNodeids.isEmpty()) {
 			return 0;
+		}
+		
+		String token = request.getHeader("token");
+		Map<String, Claim> claims = TokenUtils.verifyToken(token);
+		String uid = TokenUtils.getInfo(claims, "uid");
+		Integer userid = Integer.parseInt(uid);
+		
+		List<Authority> authorities = authorityMapper.selectAuthorityByUid(userid);
+		if (authorities !=null && !authorities.isEmpty()) {
+			Authority authority = authorities.get(0);
+			Integer authority2 = authority.getAuthority();
+			
+			
+			if (authority2 <4) {
+				return -2;
+			}
 		}
 		
 		try {
@@ -162,9 +186,11 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 	 * APP端-返回所有的省级节点
 	 */
 	public List<Node> getAPPProviceNodeList() {
+		
+		Integer qgId = nodeMapper.selectQuanGuoId();
 		Condition condition = new Condition(Node.class);
 		Criteria criteria = condition.createCriteria();
-		criteria.andEqualTo("fid", -1);
+		criteria.andEqualTo("fid", qgId);
 		List<Node> nodes = nodeMapper.selectByCondition(condition);
 		return nodes;
 	}

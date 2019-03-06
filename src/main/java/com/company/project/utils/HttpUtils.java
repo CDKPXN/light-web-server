@@ -157,6 +157,12 @@ public class HttpUtils {
 		return null;
 	}
 
+	/**
+	 * 封装参数
+	 * @param jsonString
+	 * @param httpMethod
+	 * @throws UnsupportedEncodingException
+	 */
 	private static void packageParam(String jsonString, HttpEntityEnclosingRequestBase httpMethod) throws UnsupportedEncodingException {
         // 设置到请求的http对象中
         StringEntity se = new StringEntity(jsonString);

@@ -28,4 +28,11 @@ public interface NodeMapper extends Mapper<Node> {
 	 * @return
 	 */
 	public List<NodeVo> getAllNodesList();
+	
+	/**
+	 * 获取全国选项的id
+	 * @return
+	 */
+	public Integer selectQuanGuoId();
+	
 }

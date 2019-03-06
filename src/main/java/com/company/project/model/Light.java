@@ -937,7 +937,7 @@ public class Light {
 	@Override
 	public String toString()
 	{
-		return "Light [id=" + id + ", attrBelonging=" + attrName + ", attrNum=" + attrNum + ", attrPhone="
+		return "Light [id=" + id + ", attrName=" + attrName + ", attrNum=" + attrNum + ", attrPhone="
 				+ attrPhone + ", attrDeadtime=" + attrDeadtime + ", attrNodeid=" + attrNodeid + ", attrLongitude="
 				+ attrLongitude + ", attrLatitude=" + attrLatitude + ", gpsLongitude=" + gpsLongitude + ", gpsLatitude="
 				+ gpsLatitude + ", gpsElevation=" + gpsElevation + ", gpsLock=" + gpsLock + ", fgSignal=" + fgSignal

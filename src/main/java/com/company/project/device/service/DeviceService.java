@@ -1,6 +1,11 @@
-package com.company.project.service;
+package com.company.project.device.service;
 
+import java.util.List;
+
+import com.company.project.core.Result;
 import com.company.project.core.Service;
+import com.company.project.device.dto.QueryDto;
+import com.company.project.device.dto.ResultDto;
 import com.company.project.model.Devicedata;
 import com.company.project.model.Light;
 
@@ -66,5 +71,12 @@ public interface DeviceService extends Service<Devicedata> {
 	 * @param attrNum
 	 */
 	void lightOff(String attrNum);
+
+	/**
+	 * 查询
+	 * @param queryDto
+	 * @return
+	 */
+	Result query(QueryDto queryDto);
 
 }

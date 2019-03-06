@@ -18,7 +18,7 @@ public interface LightMapper extends Mapper<Light> {
 	public Light selectLightByAttrNum(@Param("num") String num);
 	
 	/**
-	 * 查询所有灯具（权限内、带条件、搜索不以“-”开头）
+	 * 查询所有灯具（权限内、带条件）
 	 * @param nodeids
 	 * @param searchcontent
 	 * @return
@@ -38,7 +38,7 @@ public interface LightMapper extends Mapper<Light> {
 	 * @param searchcontent
 	 * @return
 	 */
-	public List<Light> selectLightsByNodeidAndsearch(@Param("nodeids")Set<Integer> nodeids,@Param("searchcontent")String searchcontent);
+//	public List<Light> selectLightsByNodeidAndsearch(@Param("nodeids")Set<Integer> nodeids,@Param("searchcontent")String searchcontent);
 	
 	/**
 	 * 删除一些节点下面的灯具

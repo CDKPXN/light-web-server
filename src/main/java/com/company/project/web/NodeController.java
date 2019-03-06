@@ -51,8 +51,10 @@ public class NodeController {
     	LOG.info("删除id={}的节点",id);
         Integer res = nodeService.deleteNodeById(id);
         
-        if (res != 0) {
+        if (res == -1) {
         	return ResultGenerator.genFailResult("删除节点失败");
+        } else if (res == -2) {
+        	return ResultGenerator.genFailResult("删除失败-没有删除节点上灯具的权限");
         }
         
         return ResultGenerator.genSuccessResult();
