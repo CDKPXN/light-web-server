@@ -11,4 +11,17 @@
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
   </resultMap>
+  
+ <select id="findHistory" resultMap="BaseResultMap" parameterType="Integer">
+         select 
+               id,fromid,toid,content,ctime
+         from 
+               message
+         where
+               (fromid = #{fromid} and toid = #{toid}) or (fromid = #{toid} and toid = #{fromid})
+               and DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= ctime
+         order by
+                ctime
+ 
+ </select>
 </mapper>

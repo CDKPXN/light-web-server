@@ -7,6 +7,8 @@ import com.company.project.core.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 
@@ -18,5 +20,11 @@ import javax.annotation.Resource;
 public class MessageServiceImpl extends AbstractService<Message> implements MessageService {
     @Resource
     private MessageMapper messageMapper;
+
+	@Override
+	public List<Message> findHistory(Integer fromid,Integer toid) {
+		List<Message> messageList = messageMapper.findHistory(fromid,toid);
+		return messageList;
+	}
 
 }
