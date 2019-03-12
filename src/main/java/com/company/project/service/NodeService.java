@@ -1,5 +1,6 @@
 package com.company.project.service;
 import com.company.project.model.Node;
+import com.company.project.vo.NodeFVo;
 import com.company.project.vo.NodeVo;
 
 import java.util.List;
@@ -51,5 +52,12 @@ public interface NodeService extends Service<Node> {
 	 * @return
 	 */
 	List<Node> getAPPProviceNodeList();
+
+	/**
+	 * 根据id 查询父节点 直到 最高节点
+	 * @param id
+	 * @return
+	 */
+	NodeFVo getFathNodes(Integer id);
 
 }

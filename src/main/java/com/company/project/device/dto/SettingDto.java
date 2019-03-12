@@ -5,15 +5,15 @@ import java.util.List;
 import com.company.project.model.Light;
 
 public class SettingDto {
-	private List<String> attrNum; // 要设置的灯具编号
+	private List<String> attrNums; // 要设置的灯具编号
 	private String type; // 要设置的类型
 	private Light data; // 要设置的参数
 	
-	public List<String> getAttrNum() {
-		return attrNum;
+	public List<String> getAttrNums() {
+		return attrNums;
 	}
-	public void setAttrNum(List<String> attrNum) {
-		this.attrNum = attrNum;
+	public void setAttrNums(List<String> attrNums) {
+		this.attrNums = attrNums;
 	}
 	public String getType() {
 		return type;
@@ -30,6 +30,6 @@ public class SettingDto {
 	
 	@Override
 	public String toString() {
-		return "SettingVo [attrNum=" + attrNum + ", type=" + type + ", data=" + data + "]";
+		return "SettingVo [attrNums=" + attrNums + ", type=" + type + ", data=" + data + "]";
 	}
 }

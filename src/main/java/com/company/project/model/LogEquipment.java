@@ -160,4 +160,10 @@ public class LogEquipment extends Log {
     public void setResult(String result) {
         this.result = result;
     }
+
+	@Override
+	public String toString() {
+		return "LogEquipment [id=" + id + ", num=" + num + ", content=" + content + ", lampnum=" + lampnum
+				+ ", lampname=" + lampname + ", ctime=" + ctime + ", result=" + result + "]";
+	}
 }

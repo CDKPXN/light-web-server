@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.company.project.core.Result;
 import com.company.project.core.Service;
+import com.company.project.device.dto.DataDto;
 import com.company.project.device.dto.QueryDto;
 import com.company.project.device.dto.ResultDto;
+import com.company.project.device.dto.SettingDto;
 import com.company.project.model.Devicedata;
 import com.company.project.model.Light;
 
@@ -73,10 +75,24 @@ public interface DeviceService extends Service<Devicedata> {
 	void lightOff(String attrNum);
 
 	/**
-	 * 查询
+	 * 发送查询指令
 	 * @param queryDto
 	 * @return
 	 */
 	Result query(QueryDto queryDto);
+
+	/**
+	 * 发送 控制指令
+	 * @param settingDto
+	 * @return
+	 */
+	Result setting(SettingDto settingDto);
+
+	/**
+	 * 处理上传的的数据
+	 * @param dataDto
+	 * @return
+	 */
+	Result handleData(DataDto dataDto);
 
 }

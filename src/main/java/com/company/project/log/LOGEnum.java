@@ -4,6 +4,7 @@ public enum LOGEnum
 {
 	LIGHT_ON("灯具上线"),
 	LIGHT_OFF("灯具下线"),
+	LIGHT_OFF_L("灯具长时间离线"),
 	HEAER_GET("刷新心跳"),
 	HEART_PUT("设置心跳"),
 	HEART_POST("心跳定时上报"),
@@ -37,7 +38,7 @@ public enum LOGEnum
 	LOG_GET("查询日志"),
 	DEVICEDATA_GET("查询数据"), // 查询数据
 	STATISTICS_GET("查询统计"),
-	ILLEGALOPERATION("非法操作");
+	ILLEGALOPERATION("未命名操作");
 	
 	private String operation;
 	

@@ -9,6 +9,7 @@ import com.company.project.model.Node;
 import com.company.project.service.LightService;
 import com.company.project.service.NodeService;
 import com.company.project.utils.TokenUtils;
+import com.company.project.vo.NodeFVo;
 import com.company.project.vo.NodeVo;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -193,6 +194,14 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 		criteria.andEqualTo("fid", qgId);
 		List<Node> nodes = nodeMapper.selectByCondition(condition);
 		return nodes;
+	}
+
+	/**
+	 * 返回父节点直到最高节点（树形结构）
+	 */
+	public NodeFVo getFathNodes(Integer id) {
+		NodeFVo nodeFVo = nodeMapper.selectNodeFatherTree(id);
+		return nodeFVo;
 	}
 	
 }

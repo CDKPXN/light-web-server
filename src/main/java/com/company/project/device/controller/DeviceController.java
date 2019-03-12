@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.device.dto.DataDto;
 import com.company.project.device.dto.QueryDto;
 import com.company.project.device.dto.ResultDto;
+import com.company.project.device.dto.SettingDto;
 import com.company.project.device.service.DeviceService;
 import com.company.project.model.Devicedata;
 import com.company.project.model.Light;
@@ -139,12 +141,37 @@ public class DeviceController {
 	@GetMapping("/query")
 	public Result query(QueryDto queryDto) {
 		
+		LOG.info("发送查询指令={}",queryDto);
+		
 		if (queryDto == null) {
+			LOG.debug("参数错误");
 			return ResultGenerator.genFailResult("参数错误");
 		}
 		
 		Result result = deviceService.query(queryDto);
 		
+		return result;
+	}
+	
+	@PutMapping("/setting")
+	public Result setting (SettingDto settingDto) {
+		LOG.info("发送控制指令={}",settingDto);
+		if (settingDto == null) {
+			return ResultGenerator.genFailResult("参数错误");
+		}
+		Result result = deviceService.setting(settingDto);
+		return result;
+	}
+	
+	@PostMapping("/data")
+	public Result getData(@RequestBody DataDto dataDto) {
+		LOG.info("接收数据={}",dataDto);
+		
+		if (dataDto == null) {
+			return ResultGenerator.genFailResult("参数错误");
+		}
+		
+		Result result = deviceService.handleData(dataDto);
 		return result;
 	}
 }

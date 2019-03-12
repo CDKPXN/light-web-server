@@ -453,7 +453,7 @@ public class Light {
      *
      * @return 4g_signal - 4G强度
      */
-    public String get4gSignal() {
+    public String getFgSignal() {
         return fgSignal;
     }
 
@@ -462,7 +462,7 @@ public class Light {
      *
      * @param 4gSignal 4G强度
      */
-    public void set4gSignal(String fgSignal) {
+    public void setFgSignal(String fgSignal) {
         this.fgSignal = fgSignal;
     }
 
@@ -471,7 +471,7 @@ public class Light {
      *
      * @return 4g_iccid - ICCID码
      */
-    public String get4gIccid() {
+    public String getFgIccid() {
         return fgIccid;
     }
 
@@ -480,7 +480,7 @@ public class Light {
      *
      * @param 4gIccid ICCID码
      */
-    public void set4gIccid(String fgIccid) {
+    public void setFgIccid(String fgIccid) {
         this.fgIccid = fgIccid;
     }
 

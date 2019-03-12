@@ -2,7 +2,7 @@ package com.company.project.device.service.impl;
 
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,14 +27,19 @@ import com.company.project.core.ResultGenerator;
 import com.company.project.dao.DevicedataMapper;
 import com.company.project.dao.LightMapper;
 import com.company.project.dao.NodeUserMapper;
+import com.company.project.device.dto.DataDto;
+import com.company.project.device.dto.IoTDto;
 import com.company.project.device.dto.QueryDto;
 import com.company.project.device.dto.ResultDto;
+import com.company.project.device.dto.SettingDto;
 import com.company.project.device.service.DeviceService;
 import com.company.project.model.Devicedata;
 import com.company.project.model.Light;
 import com.company.project.utils.Base64Utils;
 import com.company.project.utils.HttpUtils;
-import com.company.project.vo.LightAndUsersVo;
+
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Service
 @Transactional
@@ -42,14 +47,11 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 
 	private static final Logger LOG = LoggerFactory.getLogger(DeviceServiceImpl.class);
 	
+	private static final String URL = "http://127.0.0.1:8089/api/cmd";
+	
 	@Autowired
 	private HttpServletRequest request;
 	
-	@Autowired
-	private DevicedataMapper deviceDataMapper;
-	
-	@Autowired
-	private NodeUserMapper nodeUserMapper;
 	
 	@Autowired
 	private LightMapper lightMapper;
@@ -131,10 +133,10 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		Light light = handleProtocolData(result, attrNum, 2);
 		if (light != null) {
 			Light light2 = getLightByAttrNum(attrNum);
-			String fgSignal = light.get4gSignal();
-			String fgIccid = light.get4gIccid();
-			light2.set4gIccid(fgIccid);
-			light2.set4gSignal(fgSignal);
+			String fgSignal = light.getFgSignal();
+			String fgIccid = light.getFgIccid();
+			light2.setFgIccid(fgIccid);
+			light2.setFgSignal(fgSignal);
 			light2.setHeartupdatetime(new Date());
 			lightMapper.updateByPrimaryKeySelective(light2);
 		}
@@ -352,7 +354,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	
 	
 	/**
-	 * 查询
+	 * 发送查询指令
 	 */
 	public Result query(QueryDto queryDto) {
 		
@@ -361,34 +363,334 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		String type = queryDto.getType();
 		
 		if (attrNums.isEmpty() || StringUtils.isBlank(type)) {
+			LOG.debug("参数错误");
 			return ResultGenerator.genFailResult("参数不正确");
 		}
 		
 		// 循环调用物联网提供的接口
-		List<ResultDto> resultDtos = doGet(queryDto);
+		List<ResultDto> resultDtos = queryCMD(queryDto);
 		
 		return ResultGenerator.genSuccessResult(resultDtos);
 	}
 	
 	/**
+	 * 发送控制指令
+	 */
+	public Result setting(SettingDto settingDto) {
+		
+		Integer validataParam = validataParam(settingDto);
+		
+		if (validataParam != 0) {
+			LOG.debug("参数不正确");
+			return ResultGenerator.genFailResult("参数不正确");
+		}
+		
+		List<ResultDto> list = controlCMD(settingDto);
+		
+		return ResultGenerator.genSuccessResult(list);
+	}
+	
+	/**
+	 * 处理设备回复的数据
+	 */
+	public Result handleData(DataDto dataDto) {
+		Integer res = validataData(dataDto);
+		
+		if (res != 0) {
+			return ResultGenerator.genFailResult("参数错误");
+		}
+		
+		Result result = handleDataByType(dataDto);
+		
+		return result;
+	}
+	
+	/**
+	 * 讨论type不同的情况
+	 * 从而处理数据
+	 * @param dataDto
+	 * @return
+	 */
+	private Result handleDataByType(DataDto dataDto) {
+		
+		String type = dataDto.getType();
+		String data = dataDto.getData();
+		
+		if ("4g".equals(type) || "gps".equals(type)) {
+			LOG.info("处理4G/GPS回复信息");
+			handleDataByFG(data);
+		} else if ("autoH".equals(type) || "hReply".equals(type)) {
+			LOG.info("处理心跳回复信息");
+			handleDataByHeart(data);
+		} else if ("off".equals(type)) {
+			LOG.info("处理离线事件");
+			handleOff(data, 3);
+		} else if ("offL".equals(type)) {
+			LOG.info("处理长离线事件");
+			handleOff(data, 6);
+		}
+		
+		return ResultGenerator.genSuccessResult();
+	}
+	
+	/**
+	 * 处理4G和GPS回复的数据
+	 * @param data
+	 */
+	private void handleDataByFG(String data) {
+		Light light = JSON.parseObject(data, Light.class);
+		String attrNum = light.getAttrNum();
+		LOG.info("更新4G或 GPS信息");
+		updateLight(attrNum, light);
+	}
+	
+	/**
+	 * 处理心跳回复的数据
+	 * @param data
+	 */
+	private void handleDataByHeart(String data) {
+		Light light = JSON.parseObject(data, Light.class);
+		String attrNum = light.getAttrNum();
+		light.setHeartupdatetime(new Date());
+		LOG.info("更新灯具编号心跳信息");
+		updateLight(attrNum, light);
+	}
+	
+	/**
+	 * 处理离线或者长时间离线
+	 * @param data
+	 * @param indecate 离线或者 长时间离线的临界值
+	 */
+	private void handleOff(String data, Integer indecate) {
+		Light light = JSON.parseObject(data, Light.class);
+		String attrNum = light.getAttrNum();
+		LOG.info("灯具={}，离线或长时间离线",attrNum);
+		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
+		
+		// 如果上传的设备编号不存在，则不处理
+		if (light2 == null) {
+			LOG.info("设备不存在，不做处理");
+			return ;
+		}
+		
+		Integer findicate = light2.getFaultIndicate();
+		// 如果设备已经处于离线或者长时间离线 也不做处理
+		if (findicate > indecate) {
+			LOG.info("设备已经离线 或者 长时间离线，不做任何处理");
+			return ;
+		}
+		
+		LOG.info("处理前故障指示值={}",findicate);
+		findicate += 3;
+		
+		light2.setFaultIndicate(findicate);
+		LOG.info("处理后故障指示值={}",findicate);
+		lightMapper.updateByPrimaryKeySelective(light2);
+	}
+	
+	/**
+	 * 根据attrNum更新灯具信息
+	 * @param attrNum
+	 * @param light
+	 */
+	private void updateLight(String attrNum, Light light) {
+		Condition condition = new Condition(Light.class);
+		Criteria criteria = condition.createCriteria();
+		criteria.andEqualTo("attrNum", attrNum);
+		
+		LOG.info("更新attrNum={}灯具状态信息",attrNum);
+		LOG.info("灯具信息={}",light);
+		lightMapper.updateByConditionSelective(light, condition);
+	}
+
+	/**
+	 * 验证DdataDto参数是否正确
+	 * @param dataDto
+	 * @return
+	 */
+	private Integer validataData(DataDto dataDto) {
+		String data = dataDto.getData();
+		String type = dataDto.getType();
+		
+		if (StringUtils.isAnyBlank(data,type)) {
+			LOG.debug("有参数为空");
+			return -1;
+		}
+		
+		Light light = null;
+		try {
+			light = JSON.parseObject(data,Light.class);
+		} catch (Exception e) {
+			LOG.error("data转换成light 发生异常={}",e.getMessage());
+			return -2;
+		}
+		if (light == null) {
+			LOG.debug("data 数据错误");
+			return -2;
+		}
+		
+		String attrNum = light.getAttrNum();
+		
+		if (StringUtils.isBlank(attrNum)) {
+			LOG.debug("参数不正确：灯具编号为空");
+			return -3;
+		}
+		return 0;
+	}
+
+	private List<ResultDto> controlCMD(SettingDto settingDto) {
+		String type = settingDto.getType();
+		Light light = settingDto.getData();
+		List<String> attrNums = settingDto.getAttrNums();
+		
+		IoTDto ioTDto = new IoTDto();
+		ioTDto.setType(type);
+		
+		try {
+			BeanUtils.copyProperties(ioTDto, light);
+		} catch (Exception e) {
+			LOG.error("BeanUtils 转换时发生异常={}",e.getMessage());
+		}
+		LOG.info("转换之后的ioTDto={}",ioTDto);
+		List<ResultDto> resultDtos = new ArrayList<>();
+		for (String attrNum : attrNums) {
+			ResultDto resultDto = new ResultDto();
+			ioTDto.setAttrNum(attrNum);
+			Map params = packageParam(ioTDto);
+			
+			Condition condition = new Condition(Light.class);
+			Criteria criteria = condition.createCriteria();
+			criteria.andEqualTo("attrNum", attrNum);
+			lightMapper.updateByConditionSelective(light, condition);
+			
+			Result result = null;
+			try {
+				result = HttpUtils.doGet(URL, params);
+			} catch (Exception e) {
+				LOG.error("请求物联网服务器接口发生异常={}",e.getMessage());
+				resultDto.setAttrNum(attrNum);
+				resultDto.setCode(400);
+				resultDtos.add(resultDto);
+				continue;
+			}
+			
+			getResultDto(result, attrNum, resultDtos, resultDto);
+			
+		}
+		
+		return resultDtos;
+	}
+	
+	
+	/**
+	 * 验证参数是否正确
+	 * @param settingDto
+	 */
+	private Integer validataParam(SettingDto settingDto) {
+		String type = settingDto.getType();
+		
+		Light light = settingDto.getData();
+		if (light == null) {
+			LOG.debug("参数不正确");
+			return -1;
+		}
+		
+		if ("heart".equals(type)) {
+			Integer setHeartfrequency = light.getSetHeartfrequency();
+			
+			if (setHeartfrequency == null) {
+				LOG.debug("参数不正确");
+				return -1;
+			}
+		} else if ("lihgt".equals(type)) {
+			Integer df = light.getSetDayFrequency();
+			Integer ds = light.getSetDayState();
+			Integer nf = light.getSetNightFrequency();
+			Integer ns = light.getSetNightState();
+			
+			if (df == null && ds == null && nf == null && ns == null) {
+				LOG.debug("参数不正确");
+				return -1;
+			}
+		}else {
+			 Integer db = light.getSetDayBuzzer();
+			 Integer nb = light.getSetNightBuzzer();
+			 
+			 if (db == null && nb == null) {
+				 LOG.debug("参数不正确");
+				 return -1;
+			 }
+		}
+		
+		return 0;
+	}
+
+	/**
 	 * 循环调用 物联网提供的 接口进行查询
 	 * @param queryDto
 	 * @return
 	 */
-	private List<ResultDto> doGet(QueryDto queryDto) {
-		// 参数转换
+	private List<ResultDto> queryCMD(QueryDto queryDto) {
+		// 参数转换、循环调用、返回的参数添加到list中
+		List<String> attrNums = queryDto.getAttrNum();
+		String type = queryDto.getType();
 		
-		// 循环调用接口
+		IoTDto ioTDto = new IoTDto();
+		List<ResultDto> resultDtos = new ArrayList<>();
 		
-		// 接收返回值，封装到list中
-		
-		return null;
+		for (String attrNum : attrNums) {
+			ResultDto resultDto = new ResultDto();
+			
+			ioTDto.setAttrNum(attrNum);
+			
+			if ("heart".equals(type)) {
+				Light light = lightMapper.selectLightByAttrNum(attrNum);
+				Integer heartfrequency = light.getHeartfrequency();
+				ioTDto.setSetHeartfrequency(heartfrequency);
+			}
+			
+			ioTDto.setType("r" + type);
+			Map paramMap = packageParam(ioTDto);
+			Result result = null;
+			try {
+				result = HttpUtils.doGet(URL, paramMap);
+			} catch (Exception e) {
+				LOG.error("发送指令时发送异常={}",e.getMessage());
+				resultDto.setAttrNum(attrNum);
+				resultDto.setCode(400);
+				resultDtos.add(resultDto);
+				continue;
+			}
+
+			getResultDto(result,attrNum, resultDtos, resultDto);
+		}
+
+		return resultDtos;
 	}
 	
-	private Map<String, String> packageParam(QueryDto queryDto) {
-		return null;
+	/**
+	 * 解码Result
+	 * 根据返回的result 封装 resultDto
+	 * 将resultDto 添加到ResultDtoList 中
+	 * @param result
+	 * @param attrNum
+	 * @param resultDtos
+	 * @param resultDto
+	 */
+	private void getResultDto(Result result, String attrNum, List<ResultDto> resultDtos, ResultDto resultDto) {
+		resultDto.setAttrNum(attrNum);
+		JSONObject decodeResult = decodeResult(result);
+		Integer code = (Integer)decodeResult.get("code");
+		if (code == 200) {
+			LOG.info("attrNum={}指令发送成功",attrNum);
+			resultDto.setCode(200);
+		} else {
+			LOG.info("attrNum={}指令发送失败",attrNum);
+			resultDto.setCode(400);
+		}
+		resultDtos.add(resultDto);
 	}
-	
+
 	/**
 	 * 将request中的参数自动封装成JavaBean
 	 * @return
@@ -450,15 +752,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	 * @return
 	 */
 	private Light handleProtocolData(Result result, String attrNum, Integer type) {
-		String data = result.getData().toString();
-		
-		String decodeData = Base64Utils.decode(data);
-		LOG.info("解码后的内容={}",decodeData);
-		
-		Object parseData = JSON.parse(decodeData);
-		JSONObject jsonData = JSON.parseObject(parseData.toString());
-		
-		LOG.info("jsonResult={}",jsonData);
+		JSONObject jsonData = decodeResult(result);
 		Integer code = (Integer)jsonData.get("code");
 		Object data2 = null;
 		if (code == 200) {
@@ -484,6 +778,38 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		// 通过编号查询灯具
 		Light light = lightMapper.selectLightByAttrNum(attrNum);
 		return light;
+	}
+	
+	/**
+	 * 将Result 解码得到JSONObject 的数据
+	 * @param result
+	 * @return
+	 */
+	private JSONObject decodeResult(Result result) {
+		String data = result.getData().toString();
+		
+		String decodeData = Base64Utils.decode(data);
+		LOG.info("解码后的内容={}",decodeData);
+		
+		Object parseData = JSON.parse(decodeData);
+		JSONObject jsonData = JSON.parseObject(parseData.toString());
+		
+		LOG.info("jsonResult={}",jsonData);
+		
+		return jsonData;
+	}
+
+	/**
+	 * 将参数转换为Map
+	 * @param ioTDto
+	 * @return
+	 */
+	private Map packageParam(Object ioTDto) {
+		String jsonString = JSON.toJSONString(ioTDto);
+		LOG.info("查询指令中的参数JSON={}",jsonString);
+		Map paramMap = JSON.parseObject(jsonString, Map.class);
+		LOG.info("查询指令中的参数Map={}",paramMap);
+		return paramMap;
 	}
 
 }

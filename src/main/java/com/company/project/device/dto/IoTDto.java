@@ -3,13 +3,14 @@ package com.company.project.device.dto;
 public class IoTDto {
 	private String attrNum;
 	private String type;
-	private String setHeartfrequency;
-	private String setDayFrequency;
-	private String setNightFrequency;
-	private String setDayState;
-	private String setNightState;
-	private String setDayBuzzer;
-	private String setNightBuzzer;
+	private Integer setHeartfrequency;
+	private Integer setDayFrequency;
+	private Integer setNightFrequency;
+	private Integer setDayState;
+	private Integer setNightState;
+	private Integer setDayBuzzer;
+	private Integer setNightBuzzer;
+	
 	public String getAttrNum() {
 		return attrNum;
 	}
@@ -22,46 +23,46 @@ public class IoTDto {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getSetHeartfrequency() {
+	public Integer getSetHeartfrequency() {
 		return setHeartfrequency;
 	}
-	public void setSetHeartfrequency(String setHeartfrequency) {
+	public void setSetHeartfrequency(Integer setHeartfrequency) {
 		this.setHeartfrequency = setHeartfrequency;
 	}
-	public String getSetDayFrequency() {
+	public Integer getSetDayFrequency() {
 		return setDayFrequency;
 	}
-	public void setSetDayFrequency(String setDayFrequency) {
+	public void setSetDayFrequency(Integer setDayFrequency) {
 		this.setDayFrequency = setDayFrequency;
 	}
-	public String getSetNightFrequency() {
+	public Integer getSetNightFrequency() {
 		return setNightFrequency;
 	}
-	public void setSetNightFrequency(String setNightFrequency) {
+	public void setSetNightFrequency(Integer setNightFrequency) {
 		this.setNightFrequency = setNightFrequency;
 	}
-	public String getSetDayState() {
+	public Integer getSetDayState() {
 		return setDayState;
 	}
-	public void setSetDayState(String setDayState) {
+	public void setSetDayState(Integer setDayState) {
 		this.setDayState = setDayState;
 	}
-	public String getSetNightState() {
+	public Integer getSetNightState() {
 		return setNightState;
 	}
-	public void setSetNightState(String setNightState) {
+	public void setSetNightState(Integer setNightState) {
 		this.setNightState = setNightState;
 	}
-	public String getSetDayBuzzer() {
+	public Integer getSetDayBuzzer() {
 		return setDayBuzzer;
 	}
-	public void setSetDayBuzzer(String setDayBuzzer) {
+	public void setSetDayBuzzer(Integer setDayBuzzer) {
 		this.setDayBuzzer = setDayBuzzer;
 	}
-	public String getSetNightBuzzer() {
+	public Integer getSetNightBuzzer() {
 		return setNightBuzzer;
 	}
-	public void setSetNightBuzzer(String setNightBuzzer) {
+	public void setSetNightBuzzer(Integer setNightBuzzer) {
 		this.setNightBuzzer = setNightBuzzer;
 	}
 	@Override

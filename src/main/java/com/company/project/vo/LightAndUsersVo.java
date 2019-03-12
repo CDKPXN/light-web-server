@@ -27,8 +27,8 @@ public class LightAndUsersVo extends Light
 				+ getAttrDeadtime() + ", getAttrNodeid()=" + getAttrNodeid() + ", getAttrLongitude()="
 				+ getAttrLongitude() + ", getAttrLatitude()=" + getAttrLatitude() + ", getGpsLongitude()="
 				+ getGpsLongitude() + ", getGpsLatitude()=" + getGpsLatitude() + ", getGpsElevation()="
-				+ getGpsElevation() + ", getGpsLock()=" + getGpsLock() + ", get4gSignal()=" + get4gSignal()
-				+ ", get4gIccid()=" + get4gIccid() + ", getTotalElectricity()=" + getTotalElectricity()
+				+ getGpsElevation() + ", getGpsLock()=" + getGpsLock() + ", getFgSignal()=" + getFgSignal()
+				+ ", getFgIccid()=" + getFgIccid() + ", getTotalElectricity()=" + getTotalElectricity()
 				+ ", getLampsElectricity()=" + getLampsElectricity() + ", getTotalVoltage()=" + getTotalVoltage()
 				+ ", getLampsVoltage()=" + getLampsVoltage() + ", getTemperature()=" + getTemperature()
 				+ ", getFaultIndicate()=" + getFaultIndicate() + ", getDayIndicate()=" + getDayIndicate()

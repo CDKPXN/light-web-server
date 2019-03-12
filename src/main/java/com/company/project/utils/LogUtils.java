@@ -104,36 +104,43 @@ public class LogUtils
 	/**
 	 * 获取设备日志内容
 	 * @param uri
-	 * @param m
+	 * @param type
+	 * @param findicate 故障指示
 	 * @return
 	 */
-	public static String getLogEquipmentEnum(String uri,String m) {
-		// 先将m转换位小写
-		String method = m.toLowerCase();
+	public static String getLogEquipmentEnum(String uri,String type, Integer findicate) {
 		
-		String[] resources = uri.split("/");
-		String resource = resources[3];
-		
-		if ("heart".equals(resource)) {
-			if ("get".equals(method)) {
+		if (uri.contains("query")) {
+			if ("heart".equals(type)) {
 				return LOGEnum.HEAER_GET.toString();
-			} else if ("put".equals(method)) {
-				return LOGEnum.HEART_PUT.toString();
-			} else{
-				return LOGEnum.HEART_POST.toString(); // 心跳定时上报
+			} else if ("4g".equals(type)) {
+				return LOGEnum.REFRESH_4G.toString();
+			} else if ("gps".equals(type)) {
+				return LOGEnum.REFRESH_GPS.toString();
 			}
-		} else if ("refresh4g".equals(resource)) {
-			return LOGEnum.REFRESH_4G.toString();
-		} else if ("refreshgps".equals(resource)) {
-			return LOGEnum.REFRESH_GPS.toString();
-		} else if ("buzzer".equals(resource)) {
-			return LOGEnum.BUZZER_PUT.toString();
-		} else if ("light".equals(resource)) {
-			return LOGEnum.LIGHT_CMD_PUT.toString();
-		} else if ("on".equals(resource)) {
-			return LOGEnum.LIGHT_ON.toString();
-		} else if ("off".equals(resource)) {
-			return LOGEnum.LIGHT_OFF.toString();
+		} else if (uri.contains("setting")) {
+			if ("heart".equals(type)) {
+				return LOGEnum.HEART_PUT.toString();
+			} else if ("light".equals(type)) {
+				return LOGEnum.LIGHT_CMD_PUT.toString();
+			} else if ("buzzer".equals(type)) {
+				return LOGEnum.BUZZER_PUT.toString();
+			}
+		} else if (uri.contains("data")) {
+			if ("off".equals(type)) {
+				return LOGEnum.LIGHT_OFF.toString();
+			} else if ("on".equals(type)) {
+				return LOGEnum.LIGHT_ON.toString();
+			} else if ("offL".equals(type)) {
+				return LOGEnum.LIGHT_OFF_L.toString();
+			} else if ("fault".equals(type)) {
+				if (findicate == 2) {
+					return LOGEnum.LIGHT_FAULT_A.toString();
+				} else if (findicate == 3) {
+					return LOGEnum.LIGHT_FAULT_B.toString();
+				}
+				 
+			}
 		}
 		
 		return LOGEnum.ILLEGALOPERATION.toString();

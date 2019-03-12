@@ -4,6 +4,7 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.Node;
 import com.company.project.service.NodeService;
+import com.company.project.vo.NodeFVo;
 import com.company.project.vo.NodeVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -102,6 +103,15 @@ public class NodeController {
     	List<Node> nodes = nodeService.getAPPProviceNodeList();
     	LOG.info("返回={}",nodes);
     	return ResultGenerator.genSuccessResult(nodes);
+    }
+    
+    @GetMapping("/{id}/fathers")
+    public Result getFatherNode(@PathVariable Integer id) {
+    	LOG.info("根据节点={}查询该节点父节点直到最高节点",id);
+    	
+    	NodeFVo fnode = nodeService.getFathNodes(id);
+    	LOG.info("返回={}",fnode);
+    	return ResultGenerator.genSuccessResult(fnode);
     }
     
 }

@@ -177,4 +177,11 @@ public class Devicedata {
     public void setResult(String result) {
         this.result = result;
     }
+
+	@Override
+	public String toString() {
+		return "Devicedata [id=" + id + ", source=" + source + ", target=" + target + ", dataType=" + dataType
+				+ ", content=" + content + ", ctime=" + ctime + ", isDel=" + isDel + ", result=" + result + "]";
+	}
+    
 }
