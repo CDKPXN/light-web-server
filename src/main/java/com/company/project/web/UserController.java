@@ -28,7 +28,7 @@ public class UserController {
     
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping
+    @PostMapping 
     public Result add(@RequestBody UserVo user) {
     	LOG.info("添加新用户={}",user);
     	
@@ -92,5 +92,4 @@ public class UserController {
         LOG.info("返回={}",pageInfo);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
-    
 }

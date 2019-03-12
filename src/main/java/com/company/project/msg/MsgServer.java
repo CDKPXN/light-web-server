@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.interfaces.Claim;
 import com.company.project.configurer.WebMvcConfigurer;
 import com.company.project.dao.MessageMapper;
@@ -106,41 +108,46 @@ public class MsgServer {
 	public void onMessage(String message, Session session) {
 		LOG.info("来自客户端[" + session.getId() + "]的消息:" + message);
 		
-		// 解析消息
-		String[] split = message.split("/");
-		String msg = split[0];
-		String toUid = split[1];
-		LOG.info("发送给{}的消息：{}",toUid,msg);
+		JSONObject parseObject = JSON.parseObject(message);
+		//获取发送人id
+		String fromid = parseObject.getString("fromid");
+		//获取接收人id
+		Object toIdObject = parseObject.get("toid");
+		Integer[] toIdArray = (Integer[]) toIdObject;
+		//获取消息内容
+		String msg = parseObject.getString("message");
+		LOG.info("发送给{}的消息：{}",toIdArray,msg);
 		
 		
-		
-		// 保存消息
-		
-		Message message2 = new Message();
-		int toid = Integer.parseInt(toUid);
-		int fromid = Integer.parseInt(this.uid);
-		message2.setContent(msg);
-		message2.setFromid(fromid);
-		message2.setToid(toid);
-		try {
-			messageMapper.insertSelective(message2);
-		} catch (Exception e1) {
-			LOG.error("保存message 发生异常={}",e1.getMessage());
+	    for (int i = 0; i < toIdArray.length; i++) {
+	    	
+	    	// 保存消息
+	    	Message message2 = new Message();
+			message2.setContent(msg);
+			message2.setFromid(Integer.parseInt(fromid));
+			message2.setToid(toIdArray[i]);
+			try {
+				messageMapper.insertSelective(message2);
+			} catch (Exception e1) {
+				LOG.error("保存message 发生异常={}",e1.getMessage());
+			}
+			
+			// 发送消息
+			MsgServer toSocket = sessionMap.get(toIdArray[i]);
+			
+			if (null == toSocket) {
+				LOG.info("对方不在线--");
+				return ;
+			}
+			
+			try {
+				toSocket.session.getBasicRemote().sendText(msg);
+			} catch (IOException e) {
+				LOG.error("发送消息发生IO异常");
+			}
+			
 		}
-		
-		// 发送消息
-		MsgServer toSocket = sessionMap.get(toUid);
-		
-		if (null == toSocket) {
-			LOG.info("对方不在线--");
-			return ;
-		}
-		
-		try {
-			toSocket.session.getBasicRemote().sendText(msg);
-		} catch (IOException e) {
-			LOG.error("发送消息发生IO异常");
-		}
+				
 	}
 
 	/**
