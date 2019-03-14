@@ -81,7 +81,7 @@ public class LightController {
     @GetMapping("/{num}")
     public Result detail(@PathVariable String num) {
         LOG.info("根据编号查询单个灯具，编号={}",num);
-        
+         
         if (StringUtils.isBlank(num)) {
         	return ResultGenerator.genFailResult("参数错误");
         }
@@ -89,7 +89,7 @@ public class LightController {
         LightAndUsersVo lightAndUserVo = lightService.findByAttrNum(num);
         
         if (lightAndUserVo == null) {
-        	return ResultGenerator.genFailResult("改编号存在");
+        	return ResultGenerator.genFailResult("该编号不存在");
         }
         
         LOG.info("返回单个灯具和用户信息={}",lightAndUserVo);
