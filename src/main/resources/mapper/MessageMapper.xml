@@ -24,4 +24,30 @@
                 ctime
  
  </select>
+ 
+ <select id="findToIdsById" resultType="Integer" parameterType="Integer">
+   		  select distinct toid from message where fromid = #{fromid}
+ </select>
+ 
+ <select id="findFromIdsById" resultType="Integer" parameterType="Integer">
+ 		 select distinct fromid from message where toid = #{fromid}
+ </select>
+         
+ <select id="findFirst" resultType="Message" parameterType="Integer">
+         select 
+               *
+         from 
+               message
+         where
+               (fromid = #{fromid} and toid = #{toid}) or (fromid = #{toid} and toid = #{fromid})
+               and DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= ctime
+         order by
+                ctime desc
+         limit 1
+ 
+ </select>
+ 
+ <select id="findRealnameByToid" resultType="String" parameterType="Integer">
+         select realname from user where id = #{toid}
+ </select>
 </mapper>
