@@ -39,4 +39,6 @@ public interface UserService extends Service<User> {
 	 */
 	Integer updateUser(UserVo userVo);
 
+	Integer findUsername(String username);
+
 }

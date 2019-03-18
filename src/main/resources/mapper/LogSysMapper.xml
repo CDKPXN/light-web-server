@@ -29,7 +29,7 @@
         	and ctime &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-        	and ctime &lt;= date_add(#{endTime},interval 2 day)
+        	and ctime &lt;= date_add(#{endTime},interval 1 day)
         </if>
         <if test="searchContent != null">
          	and (num like CONCAT('%',#{searchContent},'%')

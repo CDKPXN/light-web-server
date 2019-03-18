@@ -81,6 +81,18 @@ public class UserController {
         LOG.info("返回={}",user);
         return ResultGenerator.genSuccessResult(user);
     }
+    
+    @GetMapping("/validataname/{username}")
+    public Result getName(@PathVariable String username) {
+    	LOG.info("查询用户名是否重复，username={}",username);
+    	Integer res = userService.findUsername(username);
+    	
+    	if(res != 0) {
+    		return ResultGenerator.genFailResult("该用户名已经存在");
+    	}
+		return ResultGenerator.genSuccessResult();
+    	
+    }
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,
