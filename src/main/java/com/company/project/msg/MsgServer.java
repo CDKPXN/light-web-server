@@ -1,6 +1,7 @@
 package com.company.project.msg;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,10 +14,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -112,8 +111,12 @@ public class MsgServer {
 		//获取发送人id
 		String fromid = parseObject.getString("fromid");
 		//获取接收人id
-		Object toIdObject = parseObject.get("toid");
-		Integer[] toIdArray = (Integer[]) toIdObject;
+		Integer[] toIdArray = parseObject.getObject("toid", Integer[].class);
+		LOG.info("toid={}",Arrays.toString(toIdArray));
+		
+		
+		
+//		Integer[] toIdArray = (Integer[]) toIdObject;
 		//获取消息内容
 		String msg = parseObject.getString("message");
 		LOG.info("发送给{}的消息：{}",toIdArray,msg);
@@ -133,7 +136,11 @@ public class MsgServer {
 			}
 			
 			// 发送消息
-			MsgServer toSocket = sessionMap.get(toIdArray[i]);
+			MsgServer toSocket = sessionMap.get(toIdArray[i].toString());
+			
+			LOG.info("======{}",toIdArray[i]);
+			
+			LOG.info("要发送的socket={}",toSocket);
 			
 			if (null == toSocket) {
 				LOG.info("对方不在线--");

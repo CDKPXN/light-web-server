@@ -52,8 +52,13 @@ public class AuthServiceImpl implements AuthService
 		String username = user.getUsername();
 		String userpass = user.getUserpass();
 		
+		LogSys logSys = getLogSys(username);
+		
+		
 		if (username == null || userpass == null) {
 			LOG.info("用户名或密码为null");
+			logSys.setResult("失败");
+			logSysMapper.insertSelective(logSys);
 			return null;
 		}
 		User userByselect = null;
@@ -61,11 +66,15 @@ public class AuthServiceImpl implements AuthService
 		try {
 			userByselect = userMapper.selectOne(user);
 		} catch (Exception e) {
+			logSys.setResult("失败");
+			logSysMapper.insertSelective(logSys);
 			LOG.info("查询到多个用户，发生异常");
 		}
 		
 		if (userByselect == null) {
 			LOG.info("用户名或密码不正确");
+			logSys.setResult("失败");
+			logSysMapper.insertSelective(logSys);
 			return null;
 		}
 		
@@ -81,18 +90,10 @@ public class AuthServiceImpl implements AuthService
 		authVo.setAuthority(authorities);
 		authVo.setMsgauth(msgauth);
 		authVo.setToken(token);
+		authVo.setUid(uid);
 		
-		// 登录日志
-		String sysLogNum = LogUtils.getSysLogNum();
-		String ipAddress = RequestUtils.getIpAddress(request);
-		LogSys logSys = new LogSys();
-		logSys.setContent(LOGEnum.AUTH_POST.toString());
-		logSys.setIpaddress(ipAddress);
-		logSys.setNum(sysLogNum);
-		logSys.setOperator(username);
 		logSys.setResult("成功");
 		logSysMapper.insertSelective(logSys);
-		
 		
 		return authVo;
 	}
@@ -136,4 +137,16 @@ public class AuthServiceImpl implements AuthService
 		return res;
 	}
 	
+	private LogSys getLogSys(String username) {
+		// 登录日志
+		String sysLogNum = LogUtils.getSysLogNum();
+		String ipAddress = RequestUtils.getIpAddress(request);
+		LogSys logSys = new LogSys();
+		logSys.setContent(LOGEnum.AUTH_POST.toString());
+		logSys.setIpaddress(ipAddress);
+		logSys.setNum(sysLogNum);
+		logSys.setOperator(username);
+		
+		return logSys;
+	}
 }

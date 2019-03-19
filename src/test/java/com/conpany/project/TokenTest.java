@@ -16,8 +16,8 @@ public class TokenTest
 	{
 		
 		
-//		String token = TokenUtils.getToken(1 + "");
-//		System.out.println(token);
+		String token = TokenUtils.getToken(1 + "");
+		System.out.println(token);
 //		String token4 = TokenUtils.getToken(4 + "");
 //		System.out.println(token4);
 //		String token5 = TokenUtils.getToken(5 + "");

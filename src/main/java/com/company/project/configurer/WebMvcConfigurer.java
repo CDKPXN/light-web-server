@@ -109,7 +109,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //解决跨域问题
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        //registry.addMapping("/**");
+    	// 设置跨域
+    	registry.addMapping("/**")
+    		.allowedMethods("PUT","POST","GET","DELETE","OPTIONS")
+    		.allowCredentials(true)
+    		.allowedHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "client_id", "uuid", "Authorization","token")
+    		.allowedOrigins("*");
     }
 
     //添加拦截器
@@ -177,10 +182,13 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private boolean validateToken(HttpServletRequest request) {
     	
     	String uri = RequestUtils.getURI(request);
+    	String method = RequestUtils.getMethod(request);
+    	if ("OPTIONS".equals(method)) {
+    		return true;
+    	}
     	
     	// 过滤掉登录方法
     	if ("/api/auth".equals(uri)) {
-    		String method = RequestUtils.getMethod(request);
     		if ("POST".equals(method)) {
     			return true;
     		}
@@ -199,6 +207,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private void responseResult(HttpServletResponse response, Result result) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-type", "application/json;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*"); // 设置跨域
         response.setStatus(200);
         try {
             response.getWriter().write(JSON.toJSONString(result));
