@@ -25,6 +25,8 @@ public interface UserMapper extends Mapper<User> {
 
 	public List<String> findFatherNode(@Param("fid")Integer nodeId);
 
+	public String findUsername(@Param("username")String username);
+
 //	public void delete(@Param("id")Integer id);
 
 }

@@ -57,6 +57,10 @@
   		       userid = #{userId}
   </select>
   
+  <select id="findUsername" resultType="String" parameterType="String">
+  		select username from user where username = #{username}
+  </select>
+  
   
   
 </mapper>

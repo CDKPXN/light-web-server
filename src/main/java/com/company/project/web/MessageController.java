@@ -4,6 +4,7 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.Message;
 import com.company.project.service.MessageService;
+import com.company.project.vo.MessageVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -45,8 +46,9 @@ public class MessageController {
 
     @GetMapping("/{id}")
     public Result detail(@PathVariable Integer id) {
-        Message message = messageService.findById(id);
-        return ResultGenerator.genSuccessResult(message);
+    	LOG.info("根据id查询聊天列表联系人id={}",id);
+        List<MessageVo> ids = messageService.findUsersById(id);
+        return ResultGenerator.genSuccessResult(ids);
     }
 
     @GetMapping

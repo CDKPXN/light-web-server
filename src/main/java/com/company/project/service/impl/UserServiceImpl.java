@@ -115,6 +115,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 			
 			User user = new User();
 			BeanUtils.copyProperties(userVo, user);
+			user.setUserpass("12345678");
 			LOG.info("copyPropertiest之后user={}",user);
 			save(user);
 			
@@ -235,6 +236,16 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		
 		authorityMapper.insertList(authorities);
 		nodeUserMapper.insertList(nodeUsers);
+	}
+
+	@Override
+	public Integer findUsername(String username) {
+        String un = userMapper.findUsername(username);
+        
+        if(un != null) {
+        	return -1;
+        }
+		return 0;
 	}
 	
 }

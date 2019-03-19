@@ -27,10 +27,24 @@ public class Message {
      * 创建的id
      */
     private Date ctime;
-
+    
     /**
+     * 是否读
+     */
+    private boolean isread;
+
+    public boolean isIsread() {
+		return isread;
+	}
+
+	public void setIsread(boolean isread) {
+		this.isread = isread;
+	}
+
+	/**
      * @return id
      */
+    
     public Integer getId() {
         return id;
     }

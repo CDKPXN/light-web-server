@@ -32,7 +32,7 @@
                       and ctime &gt;=  #{startTime}
                </if>
                <if test="endTime!=null ">
-                       and ctime &lt;=  #{endTime}
+                       and ctime &lt;=  date_add(#{endTime},interval 1 day)
                </if>
                <if test="sourceOrTarger!=null and sourceOrTarger!=''">
                    and (source like CONCAT('%',#{sourceOrTarger},'%') 

@@ -28,7 +28,7 @@
   	  	and ctime &gt;= #{sDate}
   	  </if>
   	  <if test="eDate != null">
-  	    and ctime &lt;= #{eDate}
+  	    and ctime &lt;= date_add(#{eDate},interval 1 day)
   	  </if>
   	  <if test="sc != null and sc != ''">
   	    and (lampnum like CONCAT('%',#{sc},'%')
