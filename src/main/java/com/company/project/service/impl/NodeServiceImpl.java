@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -202,6 +203,13 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 	public NodeFVo getFathNodes(Integer id) {
 		NodeFVo nodeFVo = nodeMapper.selectNodeFatherTree(id);
 		return nodeFVo;
+	}
+
+	@Override
+	public void updateById(Node node) {
+		node.setUpdatetime(new Date());
+		nodeMapper.updateById(node);
+		
 	}
 	
 }

@@ -42,5 +42,7 @@ public interface NodeMapper extends Mapper<Node> {
 	 * @return
 	 */
 	public NodeFVo selectNodeFatherTree(@Param("id")Integer id);
+
+	public void updateById(@Param("node")Node node);
 	
 }

@@ -60,4 +60,6 @@ public interface NodeService extends Service<Node> {
 	 */
 	NodeFVo getFathNodes(Integer id);
 
+	void updateById(Node node);
+
 }
