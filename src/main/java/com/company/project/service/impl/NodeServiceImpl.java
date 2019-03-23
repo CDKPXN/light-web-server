@@ -26,12 +26,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Null;
 
 
 /**
@@ -225,6 +225,13 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 				getNodeById(fid, list);
 			}
 		}
+	}
+
+	@Override
+	public void updateById(Node node) {
+		node.setUpdatetime(new Date());
+		nodeMapper.updateById(node);
+		
 	}
 	
 }

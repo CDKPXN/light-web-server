@@ -66,4 +66,7 @@
     </where>
   </select>
   
+  <update id="updateById" parameterType="Node">
+        update node set nodename = #{node.nodename},fid = #{node.fid},updatetime = #{node.updatetime} where id = #{node.id}
+  </update>
 </mapper>

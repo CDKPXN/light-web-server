@@ -68,7 +68,7 @@ public class NodeController {
     	if (node == null || node.getId() == null) {
     		return ResultGenerator.genFailResult("参数不正确");
     	}
-        nodeService.update(node);
+        nodeService.updateById(node);
         LOG.info("修改之后的节点node={}",node);
         return ResultGenerator.genSuccessResult();
     }
