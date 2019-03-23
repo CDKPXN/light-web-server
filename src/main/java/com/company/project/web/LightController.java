@@ -86,20 +86,17 @@ public class LightController {
         	return ResultGenerator.genFailResult("参数错误");
         }
         
-        LightAndUsersVo lightAndUserVo = lightService.findByAttrNum(num);
+        Result lightAndUserVo = lightService.findByAttrNum(num);
         
-        if (lightAndUserVo == null) {
-        	return ResultGenerator.genFailResult("该编号不存在");
-        }
         
         LOG.info("返回单个灯具和用户信息={}",lightAndUserVo);
-        return ResultGenerator.genSuccessResult(lightAndUserVo);
+        return lightAndUserVo;
     }
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page,
     		@RequestParam(defaultValue = "20") Integer pagesize, 
-    		@RequestParam String searchcontent, @RequestParam Integer nodeid) {
+    		@RequestParam(required=false) String searchcontent, @RequestParam(required=false) Integer nodeid) {
     	
     	LOG.info("查询权限内的所有灯具，条件={},节点id={}",searchcontent,nodeid);
     	List<Light> lights = lightService.getAllLights(searchcontent, nodeid, page, pagesize);

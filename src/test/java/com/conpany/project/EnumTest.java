@@ -1,5 +1,6 @@
 package com.conpany.project;
 
+
 import com.company.project.log.LOGEnum;
 
 public class EnumTest
@@ -8,5 +9,6 @@ public class EnumTest
 	{
 		System.out.println(LOGEnum.AUTH_POST);
 		System.out.println(LOGEnum.LIGHT_GET);
+		
 	}
 }

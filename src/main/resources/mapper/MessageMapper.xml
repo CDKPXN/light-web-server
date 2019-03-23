@@ -33,7 +33,7 @@
  		 select distinct fromid from message where toid = #{fromid}
  </select>
          
- <select id="findFirst" resultType="Message" parameterType="Integer">
+ <select id="findFirst" resultMap="BaseResultMap" parameterType="Integer">
          select 
                *
          from 

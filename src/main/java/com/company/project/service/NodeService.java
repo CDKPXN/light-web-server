@@ -58,6 +58,6 @@ public interface NodeService extends Service<Node> {
 	 * @param id
 	 * @return
 	 */
-	NodeFVo getFathNodes(Integer id);
+	List<Node> getFathNodes(Integer id);
 
 }

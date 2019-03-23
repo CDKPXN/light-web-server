@@ -23,16 +23,6 @@
     <collection column="id" property="children" ofType="nodeVo" select="getNodeChildren"></collection>
   </resultMap>
   
-  <resultMap type="com.company.project.vo.NodeFVo" id="FatherNodesTree">
-  	<id column="id" jdbcType="INTEGER" property="id" />
-    <result column="nodename" jdbcType="VARCHAR" property="nodename" />
-    <result column="fid" jdbcType="INTEGER" property="fid" />
-    <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
-    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
-    <result column="is_del" jdbcType="TINYINT" property="isDel" />
-    <collection column="fid" property="fNodeNode" ofType="nodeFVo" select="getNodeFatherById"></collection>
-  </resultMap>
-  
   <sql id="BaseSql">
     select id,nodename,fid,ctime,updatetime,is_del from node
   </sql>
@@ -76,17 +66,4 @@
     </where>
   </select>
   
-  <select id="selectNodeFatherTree" resultMap="FatherNodesTree">
-    <include refid="BaseSql" />
-    <where>
-      and id = #{id}
-    </where>
-  </select>
-  
-  <select id="getNodeFatherById" resultMap="FatherNodesTree">
-    <include refid="BaseSql" />
-    <where>
-      and id = #{fid}
-    </where>
-  </select>
 </mapper>

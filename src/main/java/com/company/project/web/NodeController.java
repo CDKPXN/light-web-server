@@ -109,9 +109,9 @@ public class NodeController {
     public Result getFatherNode(@PathVariable Integer id) {
     	LOG.info("根据节点={}查询该节点父节点直到最高节点",id);
     	
-    	NodeFVo fnode = nodeService.getFathNodes(id);
-    	LOG.info("返回={}",fnode);
-    	return ResultGenerator.genSuccessResult(fnode);
+    	List<Node> fnodes = nodeService.getFathNodes(id);
+    	LOG.info("返回={}",fnodes);
+    	return ResultGenerator.genSuccessResult(fnodes);
     }
     
 }

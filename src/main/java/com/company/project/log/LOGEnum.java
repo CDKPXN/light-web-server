@@ -7,8 +7,10 @@ public enum LOGEnum
 	LIGHT_OFF_L("灯具长时间离线"),
 	HEAER_GET("刷新心跳"),
 	HEART_PUT("设置心跳"),
-	HEART_POST("心跳定时上报"),
+	HEART_POST("心跳回复"),
 	REFRESH_4G("刷新4G"),
+	FG_REPLEY("4G回复"),
+	GPS_REPLEY("GPS回复"),
 	REFRESH_GPS("刷新GPS"),
 	BUZZER_PUT("设置蜂鸣器"),
 	AUTH_POST("登录"), // 登录

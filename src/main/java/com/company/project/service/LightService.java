@@ -5,6 +5,7 @@ import com.company.project.vo.LightStatisticsVo;
 
 import java.util.List;
 
+import com.company.project.core.Result;
 import com.company.project.core.Service;
 
 
@@ -18,7 +19,7 @@ public interface LightService extends Service<Light> {
 	 * @param num
 	 * @return
 	 */
-	LightAndUsersVo findByAttrNum(String num);
+	Result findByAttrNum(String num);
 
 	/**
 	 * 根据条件查询权限内的所有灯具信息，如果条件为空，则查询权限内的所有灯具

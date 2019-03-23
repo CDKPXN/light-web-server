@@ -59,13 +59,13 @@ public class Light {
      * GPS上报经度
      */
     @Column(name = "gps_longitude")
-    private Double gpsLongitude;
+    private String gpsLongitude;
 
     /**
      * GPS上报纬度
      */
     @Column(name = "gps_latitude")
-    private Double gpsLatitude;
+    private String gpsLatitude;
 
     /**
      * GPS上报海拔
@@ -381,7 +381,7 @@ public class Light {
      *
      * @return gps_longitude - GPS上报经度
      */
-    public Double getGpsLongitude() {
+    public String getGpsLongitude() {
         return gpsLongitude;
     }
 
@@ -390,7 +390,7 @@ public class Light {
      *
      * @param gpsLongitude GPS上报经度
      */
-    public void setGpsLongitude(Double gpsLongitude) {
+    public void setGpsLongitude(String gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
     }
 
@@ -399,7 +399,7 @@ public class Light {
      *
      * @return gps_latitude - GPS上报纬度
      */
-    public Double getGpsLatitude() {
+    public String getGpsLatitude() {
         return gpsLatitude;
     }
 
@@ -408,7 +408,7 @@ public class Light {
      *
      * @param gpsLatitude GPS上报纬度
      */
-    public void setGpsLatitude(Double gpsLatitude) {
+    public void setGpsLatitude(String gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
     }
 

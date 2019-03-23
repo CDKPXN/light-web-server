@@ -25,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Null;
 
 
 /**
@@ -199,9 +201,30 @@ public class NodeServiceImpl extends AbstractService<Node> implements NodeServic
 	/**
 	 * 返回父节点直到最高节点（树形结构）
 	 */
-	public NodeFVo getFathNodes(Integer id) {
-		NodeFVo nodeFVo = nodeMapper.selectNodeFatherTree(id);
-		return nodeFVo;
+	public List<Node> getFathNodes(Integer id) {
+		
+		LinkedList<Node> linkedList = new LinkedList<>();
+		
+		getNodeById(id, linkedList);
+		
+		return linkedList;
+	}
+	
+	/**
+	 * 递归实现查询父节点 到最高节点
+	 * @param id
+	 * @param list
+	 */
+	private void getNodeById(Integer id,LinkedList<Node> list) {
+		
+		Node node = nodeMapper.selectByPrimaryKey(id);
+		if (node != null) {
+			list.addFirst(node);
+			Integer fid = node.getFid();
+			if (fid != null && fid != -1) {
+				getNodeById(fid, list);
+			}
+		}
 	}
 	
 }

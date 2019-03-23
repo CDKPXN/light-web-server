@@ -174,9 +174,9 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		if (light != null) {
 			Light light2 = getLightByAttrNum(attrNum);
 			Integer gpsElevation = light.getGpsElevation();
-			Double gpsLatitude = light.getGpsLatitude();
+			String gpsLatitude = light.getGpsLatitude();
 			Byte gpsLock = light.getGpsLock();
-			Double gpsLongitude = light.getGpsLongitude();
+			String gpsLongitude = light.getGpsLongitude();
 			
 			light2.setGpsElevation(gpsElevation);
 			light2.setGpsLatitude(gpsLatitude);
@@ -394,9 +394,11 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	 * 处理设备回复的数据
 	 */
 	public Result handleData(DataDto dataDto) {
+		LOG.info("开始校验light数据");
 		Integer res = validataData(dataDto);
 		
 		if (res != 0) {
+			LOG.info("数据错误");
 			return ResultGenerator.genFailResult("参数错误");
 		}
 		
@@ -494,13 +496,27 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	 * @param light
 	 */
 	private void updateLight(String attrNum, Light light) {
-		Condition condition = new Condition(Light.class);
-		Criteria criteria = condition.createCriteria();
-		criteria.andEqualTo("attrNum", attrNum);
 		
-		LOG.info("更新attrNum={}灯具状态信息",attrNum);
-		LOG.info("灯具信息={}",light);
-		lightMapper.updateByConditionSelective(light, condition);
+		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
+		
+		if (light2 == null) {
+			LOG.info("灯具在数据库中不存在");
+			LOG.info("--开始创建灯具--");
+			int insert = lightMapper.insert(light);
+			
+			if (insert == 1) {
+				LOG.info("--创建成功--");
+			}
+		} else {
+			LOG.info("灯具已经存在");
+			Condition condition = new Condition(Light.class);
+			Criteria criteria = condition.createCriteria();
+			criteria.andEqualTo("attrNum", attrNum);
+			
+			LOG.info("更新attrNum={}灯具状态信息",attrNum);
+			LOG.info("灯具信息={}",light);
+			lightMapper.updateByConditionSelective(light, condition);
+		}
 	}
 
 	/**

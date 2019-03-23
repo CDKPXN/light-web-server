@@ -4,6 +4,7 @@ import com.company.project.dao.AuthorityMapper;
 import com.company.project.dao.LightMapper;
 import com.company.project.dao.NodeMapper;
 import com.company.project.dao.NodeUserMapper;
+import com.company.project.dao.UserMapper;
 import com.company.project.model.Authority;
 import com.company.project.model.Light;
 import com.company.project.model.NodeUser;
@@ -22,6 +23,8 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.company.project.core.AbstractService;
+import com.company.project.core.Result;
+import com.company.project.core.ResultGenerator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -56,7 +59,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
     private LightMapper lightMapper;
     
     @Autowired
-    private NodeUserMapper nodeUserMapper;
+    private UserMapper userMapper;
     
     @Autowired
     private HttpServletRequest request;
@@ -65,7 +68,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
     private AuthorityMapper authorityMapper;
     
     @Autowired
-    private NodeMapper nodeMapper;
+    private NodeUserMapper nodeUserMapper;
     
     @Autowired
     private NodeService nodeService;
@@ -75,10 +78,38 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 	 * @param num
 	 * @return
 	 */
-	public LightAndUsersVo findByAttrNum(String num) {
+	public Result findByAttrNum(String num) {
 		
+		Light light = lightMapper.selectLightByAttrNum(num);
+		
+		if (light == null) {
+			return ResultGenerator.genFailResult("灯具不存在!");
+		}
+		
+		Map<String, Object> authMap = getAuthority();
+		List<Integer> authNodeids = (List<Integer>)authMap.get("nodeids");
+		
+		LOG.info("权限内的节点={}",authNodeids);
+		List<Integer> nodeids = new ArrayList<>();
+		authNodeids.forEach(nodeid -> {
+			nodeService.getChildNodeids(nodeids, nodeid);
+		});
+		LOG.info("权限内的所有节点，包含子节点={}",nodeids);
+		
+		Integer attrNodeid = light.getAttrNodeid();
+		LOG.info("该灯具所在节点={}",attrNodeid);
+		
+		boolean contains = nodeids.contains(attrNodeid);
+		
+		if (!contains) {
+			return ResultGenerator.genFailResult("没有权限");
+		}
+		
+//		LightAndUsersVo lightAndUsersVo = new LightAndUsersVo();
+//		BeanUtils.copyProperties(light, lightAndUsersVo);
 		LightAndUsersVo lightAndUsersVo = nodeUserMapper.selectLightAndUsersByNum(num);
-		return lightAndUsersVo;
+		
+		return ResultGenerator.genSuccessResult(lightAndUsersVo);
 	}
 
 
@@ -351,6 +382,8 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		Map<String, Claim> claims = TokenUtils.verifyToken(token);
 		String uid = TokenUtils.getInfo(claims, "uid");
 		int id = Integer.parseInt(uid);
+		
+		map.put("uid", uid);
 		
 		List<Authority> authorities = authorityMapper.selectAuthorityByUid(id);
 		

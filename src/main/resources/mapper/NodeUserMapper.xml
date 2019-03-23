@@ -67,16 +67,19 @@
   </resultMap>
   
   
+  <!-- 
   <select id="selectLightAndUsersByNum" resultMap="LightAndUsersVoMap">
-    SELECT l.id,l.4g_iccid,l.4g_signal,l.attr_name,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,
+    SELECT l.id,l.4g_iccid,l.4g_signal,l.attr_name,l.attr_deadtime,l.attr_latitude,l.attr_longitude,l.attr_num,l.attr_nodeid,
 		l.attr_phone,l.day_indicate,l.fault_indicate,l.gps_elevation,l.gps_latitude,l.gps_lock,l.gps_longitude,l.heartfrequency,
 		l.heartupdatetime,l.lamps_electricity,l.lamps_voltage,l.lamp_buzzer_day,l.lamp_buzzer_night,l.lamp_day_frequency,
 		l.lamp_day_state,l.lamp_night_frequency,l.lamp_night_state,l.set_day_buzzer,l.set_day_frequency,l.set_day_state,
 		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
 		l.total_voltage,u.id uid,u.realname,u.duty,u.company,u.phone,u.email,u.comment,u.ctime,u.is_admin,u.username
- 		from node_user nu, user u, light l where l.attr_nodeid = nu.nodeid and u.id = nu.userid and l.attr_num = #{num}
+ 		from node_user nu, user u, light l where u.id = nu.userid and l.attr_num = #{num}
   </select>
-  
+   -->
+   
+   
   <delete id="deleteByUserId" parameterType="Integer">
         delete from node_user where userid = #{uid}
   </delete>

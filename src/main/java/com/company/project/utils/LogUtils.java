@@ -140,6 +140,12 @@ public class LogUtils
 					return LOGEnum.LIGHT_FAULT_B.toString();
 				}
 				 
+			} else if ("hReply".equals(type)) {
+				return LOGEnum.HEART_POST.toString();
+			} else if ("4g".equals(type)) {
+				return LOGEnum.FG_REPLEY.toString();
+			} else if ("gps".equals(type)) {
+				return LOGEnum.GPS_REPLEY.toString();
 			}
 		}
 		

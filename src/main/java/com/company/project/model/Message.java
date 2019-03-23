@@ -127,4 +127,11 @@ public class Message {
     public void setCtime(Date ctime) {
         this.ctime = ctime;
     }
+
+	@Override
+	public String toString() {
+		return "Message [id=" + id + ", fromid=" + fromid + ", toid=" + toid + ", content=" + content + ", ctime="
+				+ ctime + ", isread=" + isread + "]";
+	}
+    
 }
