@@ -93,4 +93,8 @@
       </foreach>
     </where>
   </delete>
+  
+  <select id="selectUserIDByNodeid" parameterType="Integer" resultType="Integer">
+    SELECT userid from node_user where nodeid = #{nodeid}
+  </select>
 </mapper>

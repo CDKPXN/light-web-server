@@ -9,8 +9,8 @@ package com.company.project.vo;
  */
 public class Lightfrequency
 {
-	private Integer dayornight;
-	private Integer frequency;
+	private Integer dayornight; // 0：白天；1：夜晚 
+	private Integer frequency; // 20；30；40
 	private Integer count;
 	
 	public Lightfrequency () {}

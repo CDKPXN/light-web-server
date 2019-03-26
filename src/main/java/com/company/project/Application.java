@@ -18,4 +18,3 @@ public class Application {
         MsgServer.setApplicationContext(configurableApplicationContext);
     }
 }
-

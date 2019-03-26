@@ -7,7 +7,9 @@ import com.company.project.dao.NodeUserMapper;
 import com.company.project.dao.UserMapper;
 import com.company.project.model.Authority;
 import com.company.project.model.Light;
+import com.company.project.model.Node;
 import com.company.project.model.NodeUser;
+import com.company.project.model.User;
 import com.company.project.service.LightService;
 import com.company.project.service.NodeService;
 import com.company.project.utils.TokenUtils;
@@ -73,8 +75,14 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
     @Autowired
     private NodeService nodeService;
     
+    @Autowired
+    private NodeMapper nodeMapper;
+    
     /**
 	 * 根据编号查询灯具和相关联的用户信息
+	 * 1.这个不考虑权限：因为如果已经安装上了灯具，
+	 *   但是并没有将灯具挂在节点上，
+	 *   如果设置权限就会查不到该灯具
 	 * @param num
 	 * @return
 	 */
@@ -83,32 +91,39 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		Light light = lightMapper.selectLightByAttrNum(num);
 		
 		if (light == null) {
-			return ResultGenerator.genFailResult("灯具不存在!");
+			LOG.info("该灯具不存在");
+			ResultGenerator.genFailResult("该灯具不存在");
 		}
 		
-		Map<String, Object> authMap = getAuthority();
-		List<Integer> authNodeids = (List<Integer>)authMap.get("nodeids");
-		
-		LOG.info("权限内的节点={}",authNodeids);
-		List<Integer> nodeids = new ArrayList<>();
-		authNodeids.forEach(nodeid -> {
-			nodeService.getChildNodeids(nodeids, nodeid);
-		});
-		LOG.info("权限内的所有节点，包含子节点={}",nodeids);
+		LightAndUsersVo lightAndUsersVo = new LightAndUsersVo();
+		BeanUtils.copyProperties(light, lightAndUsersVo);
+		LOG.info("将light  copy  到lightAndUsersVo={}",lightAndUsersVo);
 		
 		Integer attrNodeid = light.getAttrNodeid();
-		LOG.info("该灯具所在节点={}",attrNodeid);
-		
-		boolean contains = nodeids.contains(attrNodeid);
-		
-		if (!contains) {
-			return ResultGenerator.genFailResult("没有权限");
+		// 如果该灯具节点id == null，说明还没有添加该灯具，但是该灯具已经上报数据了
+		if (attrNodeid == null) {
+			LOG.info("该灯具已经安装上了并且已经开始上报数据，但是并没有在系统上添加该灯具！");
+			return ResultGenerator.genSuccessResult(lightAndUsersVo);
 		}
 		
-//		LightAndUsersVo lightAndUsersVo = new LightAndUsersVo();
-//		BeanUtils.copyProperties(light, lightAndUsersVo);
-		LightAndUsersVo lightAndUsersVo = nodeUserMapper.selectLightAndUsersByNum(num);
+		/**
+		 *  已经添加灯具
+		 */
+		Set<Integer> userids = new HashSet<>();
+		getUserIds(attrNodeid, userids);
 		
+		LOG.info("查到的userids={}",userids);
+		
+		if (!userids.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			userids.forEach(userid -> {
+				User user = userMapper.selectByPrimaryKey(userid);
+				users.add(user);
+			});
+			
+			lightAndUsersVo.setUsers(users);
+		}
+		LOG.info("返回lightVo={}",lightAndUsersVo);
 		return ResultGenerator.genSuccessResult(lightAndUsersVo);
 	}
 
@@ -163,32 +178,44 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 	/**
 	 * 统计权限内的所有灯具状态信息
 	 */
-	public LightStatisticsVo getStatisticsInfo() {
+	public Result getStatisticsInfo() {
 		Map<String, Object> authMap = getAuthority();
 		Integer auth = (Integer)authMap.get("auth");
 		if (auth < 1) {
-			return null;
+			return ResultGenerator.genFailResult("没有查看权限");
 		}
 		List<Integer> authNodeids  = (List<Integer>)authMap.get("nodeids");
 		LOG.info("权限内的nodeids={}",authNodeids);
+		
 		if (authNodeids.isEmpty()) {
-			return null;
+			return ResultGenerator.genSuccessResult();
 		}
+		
+		List<Integer> nodeids = new ArrayList<>();
+		authNodeids.forEach(nodeid->{
+			nodeService.getChildNodeids(nodeids, nodeid);
+		});
+		authNodeids = new ArrayList<>(nodeids);
+		LOG.info("查询权限内的节点的子节点--={}",authNodeids);
+		
+		LightStatisticsVo lightStatisticsVo = new LightStatisticsVo();
+		
 		List<Light> lights = lightMapper.selectLightsByNodeids(authNodeids);
 		LOG.info("权限内的灯具={}",lights);
 		// 权限内没有灯具
-		if (lights.isEmpty()) { 
-			return null;
+		if (lights.isEmpty()) {
+			return ResultGenerator.genSuccessResult();
 		}
 		// 统计信息
-		Faultindication faultindication_0 = new Faultindication(0,0);
-		Faultindication faultindication_1 = new Faultindication(1,0);
-		Faultindication faultindication_2 = new Faultindication(2,0);
 		
-		Buzzerstate buzzerstate_day_0 = new Buzzerstate(0,0,0);
-		Buzzerstate buzzerstate_day_1 = new Buzzerstate(0,1,0);
-		Buzzerstate buzzerstate_night_0 = new Buzzerstate(1,0,0);
-		Buzzerstate buzzerstate_night_1 = new Buzzerstate(1,1,0);
+		Faultindication faultindication_2 = new Faultindication(2,0); // 主通道故障
+		Faultindication faultindication_3 = new Faultindication(3,0); // 主副均故障
+		Faultindication faultindication_4 = new Faultindication(4,0); // 长时间离线
+		
+		Buzzerstate buzzerstate_day_0 = new Buzzerstate(0,0,0); // 白天长鸣
+		Buzzerstate buzzerstate_day_1 = new Buzzerstate(0,1,0); // 白天常静
+		Buzzerstate buzzerstate_night_0 = new Buzzerstate(1,0,0); // 夜间长鸣
+		Buzzerstate buzzerstate_night_1 = new Buzzerstate(1,1,0); // 夜间常静
 		
 		Lightfrequency lightfrequency_day_20 = new Lightfrequency(0,20,0);
 		Lightfrequency lightfrequency_day_30 = new Lightfrequency(0,30,0);
@@ -197,11 +224,11 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		Lightfrequency lightfrequency_night_30 = new Lightfrequency(1,30,0);
 		Lightfrequency lightfrequency_night_40 = new Lightfrequency(1,40,0);
 		
-		LightState lightState_day_0 = new LightState(0,0,0);
-		LightState lightState_day_1 = new LightState(0,1,0);
-		LightState lightState_day_2 = new LightState(0,2,0);
-		LightState lightState_day_3 = new LightState(0,3,0);
-		LightState lightState_day_4 = new LightState(0,4,0);
+		LightState lightState_day_0 = new LightState(0,0,0); // 长亮
+		LightState lightState_day_1 = new LightState(0,1,0); // 长灭
+		LightState lightState_day_2 = new LightState(0,2,0); // 同步
+		LightState lightState_day_3 = new LightState(0,3,0); // 自主
+		LightState lightState_day_4 = new LightState(0,4,0); // 整体断电
 		LightState lightState_night_0 = new LightState(1,0,0);
 		LightState lightState_night_1 = new LightState(1,1,0);
 		LightState lightState_night_2 = new LightState(1,2,0);
@@ -217,28 +244,31 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			Integer lampDayState = light.getLampDayState(); // 灯具白天状态
 			Integer lampNightState = light.getLampNightState(); // 灯具夜间状态
 			
-			if (faultIndicate == 0) {
-				Integer count = faultindication_0.getCount();
-				count++;
-				faultindication_0.setCount(count);
-			} else if (faultIndicate == 1) {
-				Integer count = faultindication_1.getCount();
-				count++;
-				faultindication_1.setCount(count);
-			} else if (faultIndicate == 2) {
+			if (faultIndicate == 2) {
+				LOG.info("---故障统计：主通道故障+1---");
 				Integer count = faultindication_2.getCount();
 				count++;
 				faultindication_2.setCount(count);
-			} else {
-				
+			} else if (faultIndicate == 3) {
+				LOG.info("---故障统计：主副通道故障+1---");
+				Integer count = faultindication_3.getCount();
+				count++;
+				faultindication_3.setCount(count);
+			} else if (faultIndicate == 7 || faultIndicate == 8 || faultIndicate == 9) {
+				LOG.info("---故障统计：长时间离线+1---");
+				Integer count = faultindication_4.getCount();
+				count++;
+				faultindication_4.setCount(count);
 			}
 			
 			// 白天蜂鸣器状态
 			if (lampBuzzerDay == 0) {
+				LOG.info("蜂鸣器统计：白天长鸣+1");
 				Integer count = buzzerstate_day_0.getCount();
 				count++;
 				buzzerstate_day_0.setCount(count);
 			} else if (lampBuzzerDay == 1){
+				LOG.info("蜂鸣器统计：白天长静+1");
 				Integer count = buzzerstate_day_1.getCount();
 				count++;
 				buzzerstate_day_1.setCount(count);
@@ -246,10 +276,12 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			
 			// 夜间蜂鸣器状态
 			if (lampBuzzerNight == 0) {
+				LOG.info("蜂鸣器统计：夜间长鸣+1");
 				Integer count = buzzerstate_night_0.getCount();
 				count++;
 				buzzerstate_night_0.setCount(count);
 			} else if (lampBuzzerNight == 1) {
+				LOG.info("蜂鸣器统计：夜间长静+1");
 				Integer count = buzzerstate_night_1.getCount();
 				count++;
 				buzzerstate_night_1.setCount(count);
@@ -257,44 +289,54 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			
 			// 灯具白天状态
 			if (lampDayState == 0) {
+				LOG.info("灯具状态统计：白天长亮+1");
 				Integer count = lightState_day_0.getCount();
 				count++;
 				lightState_day_0.setCount(count);
 			} else if (lampDayState == 1) {
+				LOG.info("灯具状态统计：白天长灭+1");
 				Integer count = lightState_day_1.getCount();
 				count++;
 				lightState_day_1.setCount(count);
 			} else if (lampDayState == 2) {
+				LOG.info("灯具状态统计：白天同步闪烁+1");
 				Integer count = lightState_day_2.getCount();
 				count++;
 				lightState_day_2.setCount(count);
 			} else if (lampDayState == 3) {
+				LOG.info("灯具状态统计：白天自主闪烁+1");
 				Integer count = lightState_day_3.getCount();
 				count++;
 				lightState_day_3.setCount(count);
 			} else if (lampDayState == 4) {
+				LOG.info("灯具状态统计：白天整体断电+1");
 				Integer count = lightState_day_4.getCount();
 				count++;
 				lightState_day_4.setCount(count);
 			}
 			// 灯具夜间状态
 			if (lampNightState == 0) {
+				LOG.info("灯具状态统计：夜间夜间长亮+1");
 				Integer count = lightState_night_0.getCount();
 				count++;
 				lightState_night_0.setCount(count);
 			} else if (lampNightState == 1) {
+				LOG.info("灯具状态统计：夜间长灭+1");
 				Integer count = lightState_night_1.getCount();
 				count++;
 				lightState_night_1.setCount(count);
 			} else if (lampNightState == 2) {
+				LOG.info("灯具状态统计：夜间同步闪烁+1");
 				Integer count = lightState_night_2.getCount();
 				count++;
 				lightState_night_2.setCount(count);
 			} else if (lampNightState == 3) {
+				LOG.info("灯具状态统计：夜间自主闪烁+1");
 				Integer count = lightState_night_3.getCount();
 				count++;
 				lightState_night_3.setCount(count);
 			} else if (lampNightState == 4) {
+				LOG.info("灯具状态统计：夜间整体断电+1");
 				Integer count = lightState_night_4.getCount();
 				count++;
 				lightState_night_4.setCount(count);
@@ -329,6 +371,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			}
 			
 		});
+		
 		List<Buzzerstate> buzzerstates = new ArrayList<>();
 		buzzerstates.add(buzzerstate_night_1);
 		buzzerstates.add(buzzerstate_night_0);
@@ -336,9 +379,9 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		buzzerstates.add(buzzerstate_day_1);
 		
 		List<Faultindication> faultindications = new ArrayList<>();
-		faultindications.add(faultindication_0);
-		faultindications.add(faultindication_1);
 		faultindications.add(faultindication_2);
+		faultindications.add(faultindication_3);
+		faultindications.add(faultindication_4);
 		
 		List<Lightfrequency> lightfrequencies = new ArrayList<>();
 		lightfrequencies.add(lightfrequency_night_40);
@@ -360,13 +403,13 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		lightStates.add(lightState_day_1);
 		lightStates.add(lightState_day_0);
 		
-		LightStatisticsVo lightStatisticsVo = new LightStatisticsVo();
+		
 		lightStatisticsVo.setBuzzerstates(buzzerstates);
 		lightStatisticsVo.setFaultindications(faultindications);
 		lightStatisticsVo.setLightfrequencies(lightfrequencies);
 		lightStatisticsVo.setLightStates(lightStates);
 		
-		return lightStatisticsVo;
+		return ResultGenerator.genSuccessResult(lightStatisticsVo);
 	}
 	
 	
@@ -405,8 +448,31 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		return map;
 	}
 	
-	private void getStatisticsInfo(Light light) {
+	/**
+	 * 根据nodeid 得到父id
+	 * @param attrNodeid
+	 * @return
+	 */
+	private Integer getFid(Integer attrNodeid) {
+		Node node = nodeMapper.selectByPrimaryKey(attrNodeid);
+		Integer fid = node.getFid();
 		
+		return fid;
 	}
 
+	/**
+	 * 递归得到一个节点的所有管理者
+	 * @param nodeid
+	 * @param nodeids
+	 */
+	private void getUserIds(Integer nodeid, Set<Integer> userids) {
+		Set<Integer> userids1 = nodeUserMapper.selectUserIDByNodeid(nodeid);
+		userids.addAll(userids1);
+		
+		Integer fid = getFid(nodeid);
+		if (fid != -1) {
+			getUserIds(fid, userids);
+		}
+	}
+	
 }

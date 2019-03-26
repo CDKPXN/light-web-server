@@ -23,10 +23,9 @@ public class StatisticsController {
 	@GetMapping
 	public Result getStatistics() {
 		LOG.info("统计灯具状态==");
-		LightStatisticsVo lightStatisticsVo = lightService.getStatisticsInfo();
-		LOG.info("统计信息={}",lightStatisticsVo);
-		Result<LightStatisticsVo> result = ResultGenerator.genSuccessResult(lightStatisticsVo);
-		LOG.info("result={}",result);
+		
+		Result result = lightService.getStatisticsInfo();
+		LOG.info("统计信息={}",result);
 		return result;
 	}
 }

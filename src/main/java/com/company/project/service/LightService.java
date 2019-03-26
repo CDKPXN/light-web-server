@@ -35,6 +35,6 @@ public interface LightService extends Service<Light> {
 	 * 统计权限内的所有灯具状态信息
 	 * @return
 	 */
-	LightStatisticsVo getStatisticsInfo();
+	Result getStatisticsInfo();
 
 }
