@@ -47,7 +47,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 
 	private static final Logger LOG = LoggerFactory.getLogger(DeviceServiceImpl.class);
 	
-	private static final String URL = "http://127.0.0.1:8089/api/cmd";
+	private static final String URL = "http://127.0.0.1:8000/api/cmd";
 	
 	@Autowired
 	private HttpServletRequest request;
