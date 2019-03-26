@@ -33,6 +33,11 @@ public class LightController {
     private LightService lightService;
 
     
+    /**
+     * 在前端做判断是否有权限添加灯具
+     * @param light
+     * @return
+     */
     @PostMapping
     public Result add(@RequestBody Light light) {
     	LOG.info("添加灯具，灯具={}",light);

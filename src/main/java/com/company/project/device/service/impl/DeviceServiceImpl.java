@@ -804,10 +804,10 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	private JSONObject decodeResult(Result result) {
 		String data = result.getData().toString();
 		
-		String decodeData = Base64Utils.decode(data);
-		LOG.info("解码后的内容={}",decodeData);
-		
-		Object parseData = JSON.parse(decodeData);
+//		String decodeData = Base64Utils.decode(data);
+//		LOG.info("解码后的内容={}",decodeData);
+//		Object parseData = JSON.parse(decodeData);
+		Object parseData = JSON.parse(data);
 		JSONObject jsonData = JSON.parseObject(parseData.toString());
 		
 		LOG.info("jsonResult={}",jsonData);

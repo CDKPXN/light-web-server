@@ -270,6 +270,11 @@ public class LOGAspect
 			
 			Light light = lightMapper.selectLightByAttrNum(attrNum);
 			String attrName = light.getAttrName();
+			
+			if (StringUtils.isBlank(attrName)) {
+				attrName = "未命名设备";
+			}
+			
 			String equipmentLogNum = LogUtils.getEquipmentLogNum();
 			
 			logEquipment.setContent(content);
@@ -284,7 +289,7 @@ public class LOGAspect
 			} else {
 				result = "失败";
 			}
-			
+			logEquipment.setResult(result);
 			LOG.info("插入一条设备日志={}",logEquipment);
 			logEquipments.add(logEquipment);
 		});
@@ -419,12 +424,11 @@ public class LOGAspect
 	 */
 	private List<ResultDto> decodeResult(Object result) {
 		JSONObject resultOjbect = JSON.parseObject(result.toString());
-		String data = (String)resultOjbect.get("data");
-		
-		String decodeData = Base64Utils.decode(data);
-		LOG.info("解码后的内容={}",decodeData);
-		
-		List<ResultDto> list = JSON.parseArray(decodeData, ResultDto.class);
+		String data = resultOjbect.get("data").toString();
+//		String decodeData = Base64Utils.decode(data);
+//		LOG.info("解码后的内容={}",decodeData);
+//		List<ResultDto> list = JSON.parseArray(decodeData, ResultDto.class);
+		List<ResultDto> list = JSON.parseArray(data, ResultDto.class);
 		return list;
 	}
 	

@@ -1,11 +1,11 @@
 package com.company.project.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.company.project.core.Mapper;
-import com.company.project.model.Light;
 import com.company.project.model.NodeUser;
 import com.company.project.vo.LightAndUsersVo;
 
@@ -25,4 +25,6 @@ public interface NodeUserMapper extends Mapper<NodeUser> {
 	 * @param nodeids
 	 */
 	public void deleteByNodeIds(@Param("nodeids")List<Integer> nodeids);
+	
+	public Set<Integer> selectUserIDByNodeid(@Param("nodeid") Integer nodeid);
 }

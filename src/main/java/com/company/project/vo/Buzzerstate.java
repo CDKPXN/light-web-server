@@ -9,8 +9,8 @@ package com.company.project.vo;
  */
 public class Buzzerstate
 {
-	private Integer dayornight;
-	private Integer buzzerstate;
+	private Integer dayornight; // 0：白天；1：夜晚
+	private Integer buzzerstate; // 0：长鸣；1：长静
 	private Integer count;
 	
 	public Buzzerstate() {
