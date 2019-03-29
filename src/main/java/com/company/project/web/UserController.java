@@ -96,7 +96,7 @@ public class UserController {
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,
-    		String filter) {
+    		@RequestParam(required = false)String filter) {
     	LOG.info("查询所有用户,page={},size={},filter={}",page,size,filter);
     	PageHelper.startPage(page, size);
         List<User> list = userService.findByFilter(filter);
