@@ -71,7 +71,7 @@ public class LogEquipmentController {
     public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, 
     		@RequestParam(defaultValue = "1970-1-1") Date startDate, 
     		@RequestParam(defaultValue = "2099-12-31") Date endDate, 
-    		@RequestParam String searchcontent) {
+    		@RequestParam(required = false) String searchcontent) {
         
     	LOG.info("查询全部设备日志，startDate={},endDate={},searchcontent={}",startDate, endDate, searchcontent);
     	PageInfo info = logEquipmentService.getAllEquipmentLogs(startDate, endDate, searchcontent, page, size);

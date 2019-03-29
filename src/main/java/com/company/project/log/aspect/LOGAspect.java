@@ -424,7 +424,13 @@ public class LOGAspect
 	 */
 	private List<ResultDto> decodeResult(Object result) {
 		JSONObject resultOjbect = JSON.parseObject(result.toString());
-		String data = resultOjbect.get("data").toString();
+		Object object = resultOjbect.get("data");
+		
+		String data = null;
+		if (object != null) {
+			data = resultOjbect.get("data").toString();
+		}
+		
 //		String decodeData = Base64Utils.decode(data);
 //		LOG.info("解码后的内容={}",decodeData);
 //		List<ResultDto> list = JSON.parseArray(decodeData, ResultDto.class);
