@@ -5,6 +5,7 @@ import com.company.project.core.ResultGenerator;
 import com.company.project.model.Light;
 import com.company.project.service.LightService;
 import com.company.project.vo.LightAndUsersVo;
+import com.github.pagehelper.PageInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -99,12 +100,12 @@ public class LightController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page,
-    		@RequestParam(defaultValue = "20") Integer pagesize, 
+    public Result list(@RequestParam(defaultValue = "0") Integer pageNo,
+    		@RequestParam(defaultValue = "0") Integer pageSize, 
     		@RequestParam(required=false) String searchcontent, @RequestParam(required=false) Integer nodeid) {
     	
-    	LOG.info("查询权限内的所有灯具，条件={},节点id={}",searchcontent,nodeid);
-    	List<Light> lights = lightService.getAllLights(searchcontent, nodeid, page, pagesize);
+    	LOG.info("查询权限内的所有灯具，条件={},节点id={},pageNo={},pageSize={}",searchcontent,nodeid,pageNo, pageSize);
+    	List<Light> lights = lightService.getAllLights(searchcontent, nodeid, pageNo, pageSize);
     	
         return ResultGenerator.genSuccessResult(lights);
     }

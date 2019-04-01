@@ -95,10 +95,10 @@ public class UserController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size,
+    public Result list(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "0") Integer pageSize,
     		@RequestParam(required = false)String filter) {
-    	LOG.info("查询所有用户,page={},size={},filter={}",page,size,filter);
-    	PageHelper.startPage(page, size);
+    	LOG.info("查询所有用户,page={},size={},filter={}",pageNo,pageSize,filter);
+    	PageHelper.startPage(pageNo, pageSize);
         List<User> list = userService.findByFilter(filter);
         PageInfo pageInfo = new PageInfo(list);
         LOG.info("返回={}",pageInfo);

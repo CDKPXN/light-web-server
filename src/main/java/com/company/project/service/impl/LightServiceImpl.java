@@ -19,6 +19,8 @@ import com.company.project.vo.LightAndUsersVo;
 import com.company.project.vo.LightState;
 import com.company.project.vo.LightStatisticsVo;
 import com.company.project.vo.Lightfrequency;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -168,9 +170,21 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		
 		List<Light> lights = null;
 		LOG.info("searchcontent={}",searchcontent);
-		lights = lightMapper.selectAllLights(nodeSet, searchcontent);
-		LOG.info("lights={}",lights);
 		
+		
+		LOG.info("page==={}",page);
+		LOG.info("pagesize=={}",pagesize);
+//		PageHelper.startPage(page, pagesize);
+		
+		
+		Integer pageNo = 0;
+		if (page > 1) {
+			pageNo = (page - 1) * pagesize;
+		}
+		
+		lights = lightMapper.selectAllLights(nodeSet, searchcontent, pageNo, pagesize);
+		LOG.info("lights={}",lights);
+//		PageInfo pageInfo = new PageInfo(lights);
 		return lights;
 	}
 	
@@ -244,130 +258,146 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			Integer lampDayState = light.getLampDayState(); // 灯具白天状态
 			Integer lampNightState = light.getLampNightState(); // 灯具夜间状态
 			
-			if (faultIndicate == 2) {
-				LOG.info("---故障统计：主通道故障+1---");
-				Integer count = faultindication_2.getCount();
-				count++;
-				faultindication_2.setCount(count);
-			} else if (faultIndicate == 3) {
-				LOG.info("---故障统计：主副通道故障+1---");
-				Integer count = faultindication_3.getCount();
-				count++;
-				faultindication_3.setCount(count);
-			} else if (faultIndicate == 7 || faultIndicate == 8 || faultIndicate == 9) {
-				LOG.info("---故障统计：长时间离线+1---");
-				Integer count = faultindication_4.getCount();
-				count++;
-				faultindication_4.setCount(count);
+			if (faultIndicate != null) {
+				if (faultIndicate == 2) {
+					LOG.info("---故障统计：主通道故障+1---");
+					Integer count = faultindication_2.getCount();
+					count++;
+					faultindication_2.setCount(count);
+				} else if (faultIndicate == 3) {
+					LOG.info("---故障统计：主副通道故障+1---");
+					Integer count = faultindication_3.getCount();
+					count++;
+					faultindication_3.setCount(count);
+				} else if (faultIndicate == 7 || faultIndicate == 8 || faultIndicate == 9) {
+					LOG.info("---故障统计：长时间离线+1---");
+					Integer count = faultindication_4.getCount();
+					count++;
+					faultindication_4.setCount(count);
+				}
 			}
 			
 			// 白天蜂鸣器状态
-			if (lampBuzzerDay == 0) {
-				LOG.info("蜂鸣器统计：白天长鸣+1");
-				Integer count = buzzerstate_day_0.getCount();
-				count++;
-				buzzerstate_day_0.setCount(count);
-			} else if (lampBuzzerDay == 1){
-				LOG.info("蜂鸣器统计：白天长静+1");
-				Integer count = buzzerstate_day_1.getCount();
-				count++;
-				buzzerstate_day_1.setCount(count);
+			if (lampBuzzerDay != null) {
+				if (lampBuzzerDay == 0) {
+					LOG.info("蜂鸣器统计：白天长鸣+1");
+					Integer count = buzzerstate_day_0.getCount();
+					count++;
+					buzzerstate_day_0.setCount(count);
+				} else if (lampBuzzerDay == 1){
+					LOG.info("蜂鸣器统计：白天长静+1");
+					Integer count = buzzerstate_day_1.getCount();
+					count++;
+					buzzerstate_day_1.setCount(count);
+				}
 			}
-			
 			// 夜间蜂鸣器状态
-			if (lampBuzzerNight == 0) {
-				LOG.info("蜂鸣器统计：夜间长鸣+1");
-				Integer count = buzzerstate_night_0.getCount();
-				count++;
-				buzzerstate_night_0.setCount(count);
-			} else if (lampBuzzerNight == 1) {
-				LOG.info("蜂鸣器统计：夜间长静+1");
-				Integer count = buzzerstate_night_1.getCount();
-				count++;
-				buzzerstate_night_1.setCount(count);
+			if (lampBuzzerNight != null) {
+				if (lampBuzzerNight == 0) {
+					LOG.info("蜂鸣器统计：夜间长鸣+1");
+					Integer count = buzzerstate_night_0.getCount();
+					count++;
+					buzzerstate_night_0.setCount(count);
+				} else if (lampBuzzerNight == 1) {
+					LOG.info("蜂鸣器统计：夜间长静+1");
+					Integer count = buzzerstate_night_1.getCount();
+					count++;
+					buzzerstate_night_1.setCount(count);
+				}
 			}
 			
 			// 灯具白天状态
-			if (lampDayState == 0) {
-				LOG.info("灯具状态统计：白天长亮+1");
-				Integer count = lightState_day_0.getCount();
-				count++;
-				lightState_day_0.setCount(count);
-			} else if (lampDayState == 1) {
-				LOG.info("灯具状态统计：白天长灭+1");
-				Integer count = lightState_day_1.getCount();
-				count++;
-				lightState_day_1.setCount(count);
-			} else if (lampDayState == 2) {
-				LOG.info("灯具状态统计：白天同步闪烁+1");
-				Integer count = lightState_day_2.getCount();
-				count++;
-				lightState_day_2.setCount(count);
-			} else if (lampDayState == 3) {
-				LOG.info("灯具状态统计：白天自主闪烁+1");
-				Integer count = lightState_day_3.getCount();
-				count++;
-				lightState_day_3.setCount(count);
-			} else if (lampDayState == 4) {
-				LOG.info("灯具状态统计：白天整体断电+1");
-				Integer count = lightState_day_4.getCount();
-				count++;
-				lightState_day_4.setCount(count);
+			if (lampDayState != null) {
+				if (lampDayState == 0) {
+					LOG.info("灯具状态统计：白天长亮+1");
+					Integer count = lightState_day_0.getCount();
+					count++;
+					lightState_day_0.setCount(count);
+				} else if (lampDayState == 1) {
+					LOG.info("灯具状态统计：白天长灭+1");
+					Integer count = lightState_day_1.getCount();
+					count++;
+					lightState_day_1.setCount(count);
+				} else if (lampDayState == 2) {
+					LOG.info("灯具状态统计：白天同步闪烁+1");
+					Integer count = lightState_day_2.getCount();
+					count++;
+					lightState_day_2.setCount(count);
+				} else if (lampDayState == 3) {
+					LOG.info("灯具状态统计：白天自主闪烁+1");
+					Integer count = lightState_day_3.getCount();
+					count++;
+					lightState_day_3.setCount(count);
+				} else if (lampDayState == 4) {
+					LOG.info("灯具状态统计：白天整体断电+1");
+					Integer count = lightState_day_4.getCount();
+					count++;
+					lightState_day_4.setCount(count);
+				}
 			}
+			
 			// 灯具夜间状态
-			if (lampNightState == 0) {
-				LOG.info("灯具状态统计：夜间夜间长亮+1");
-				Integer count = lightState_night_0.getCount();
-				count++;
-				lightState_night_0.setCount(count);
-			} else if (lampNightState == 1) {
-				LOG.info("灯具状态统计：夜间长灭+1");
-				Integer count = lightState_night_1.getCount();
-				count++;
-				lightState_night_1.setCount(count);
-			} else if (lampNightState == 2) {
-				LOG.info("灯具状态统计：夜间同步闪烁+1");
-				Integer count = lightState_night_2.getCount();
-				count++;
-				lightState_night_2.setCount(count);
-			} else if (lampNightState == 3) {
-				LOG.info("灯具状态统计：夜间自主闪烁+1");
-				Integer count = lightState_night_3.getCount();
-				count++;
-				lightState_night_3.setCount(count);
-			} else if (lampNightState == 4) {
-				LOG.info("灯具状态统计：夜间整体断电+1");
-				Integer count = lightState_night_4.getCount();
-				count++;
-				lightState_night_4.setCount(count);
+			if (lampNightState != null) {
+				if (lampNightState == 0) {
+					LOG.info("灯具状态统计：夜间夜间长亮+1");
+					Integer count = lightState_night_0.getCount();
+					count++;
+					lightState_night_0.setCount(count);
+				} else if (lampNightState == 1) {
+					LOG.info("灯具状态统计：夜间长灭+1");
+					Integer count = lightState_night_1.getCount();
+					count++;
+					lightState_night_1.setCount(count);
+				} else if (lampNightState == 2) {
+					LOG.info("灯具状态统计：夜间同步闪烁+1");
+					Integer count = lightState_night_2.getCount();
+					count++;
+					lightState_night_2.setCount(count);
+				} else if (lampNightState == 3) {
+					LOG.info("灯具状态统计：夜间自主闪烁+1");
+					Integer count = lightState_night_3.getCount();
+					count++;
+					lightState_night_3.setCount(count);
+				} else if (lampNightState == 4) {
+					LOG.info("灯具状态统计：夜间整体断电+1");
+					Integer count = lightState_night_4.getCount();
+					count++;
+					lightState_night_4.setCount(count);
+				}
 			}
+			
 			// 灯具白天频率
-			if (lampDayFrequency == 20) {
-				Integer count = lightfrequency_day_20.getCount();
-				count++;
-				lightfrequency_day_20.setCount(count);
-			} else if (lampDayFrequency == 30) {
-				Integer count = lightfrequency_day_30.getCount();
-				count++;
-				lightfrequency_day_30.setCount(count);
-			} else if (lampDayFrequency == 40) {
-				Integer count = lightfrequency_day_40.getCount();
-				count++;
-				lightfrequency_day_40.setCount(count);
+			if (lampDayFrequency != null) {
+				if (lampDayFrequency == 20) {
+					Integer count = lightfrequency_day_20.getCount();
+					count++;
+					lightfrequency_day_20.setCount(count);
+				} else if (lampDayFrequency == 30) {
+					Integer count = lightfrequency_day_30.getCount();
+					count++;
+					lightfrequency_day_30.setCount(count);
+				} else if (lampDayFrequency == 40) {
+					Integer count = lightfrequency_day_40.getCount();
+					count++;
+					lightfrequency_day_40.setCount(count);
+				}
 			}
+			
 			// 灯具夜间频率
-			if (lampNightFrequency == 20) {
-				Integer count = lightfrequency_night_20.getCount();
-				count++;
-				lightfrequency_night_20.setCount(count);
-			} else if (lampNightFrequency == 30) {
-				Integer count = lightfrequency_night_30.getCount();
-				count++;
-				lightfrequency_night_30.setCount(count);
-			} else if (lampNightFrequency == 40) {
-				Integer count = lightfrequency_night_40.getCount();
-				count++;
-				lightfrequency_night_40.setCount(count);
+			if (lampNightFrequency != null) {
+				if (lampNightFrequency == 20) {
+					Integer count = lightfrequency_night_20.getCount();
+					count++;
+					lightfrequency_night_20.setCount(count);
+				} else if (lampNightFrequency == 30) {
+					Integer count = lightfrequency_night_30.getCount();
+					count++;
+					lightfrequency_night_30.setCount(count);
+				} else if (lampNightFrequency == 40) {
+					Integer count = lightfrequency_night_40.getCount();
+					count++;
+					lightfrequency_night_40.setCount(count);
+				}
 			}
 			
 		});

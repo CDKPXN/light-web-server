@@ -79,6 +79,10 @@
 	  	and (l.attr_num like CONCAT('%',#{searchcontent},'%')
 	  	or l.attr_name like concat('%',#{searchcontent},'%'))
 	  </if>
+	  
+	  <if test="pageSize != 0">
+	  	limit #{pageNo},#{pageSize}
+	  </if>
 	</where>
   </select>
   

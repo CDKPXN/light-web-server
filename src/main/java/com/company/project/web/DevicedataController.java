@@ -72,10 +72,10 @@ public class DevicedataController {
     @GetMapping
     public Result list(@RequestParam(required = false) Integer dataType,@RequestParam(defaultValue = "1970-1-1") Date startTime,
     		           @RequestParam(defaultValue = "2099-12-31") Date endTime,@RequestParam(required = false) String sourceOrTarger,
-    		           @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size) {
+    		           @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "0") Integer pageSize) {
         
         LOG.info("查询上报下发数据，dateType={}，startTime={}，endTime={}，sourceOrTarger={}",dataType,startTime,endTime,sourceOrTarger);
-        PageInfo list = devicedataService.findAllData(dataType,startTime,endTime,sourceOrTarger,page,size);
+        PageInfo list = devicedataService.findAllData(dataType,startTime,endTime,sourceOrTarger, pageNo, pageSize);
         LOG.info("返回={}",list);      
         return ResultGenerator.genSuccessResult(list);       
       

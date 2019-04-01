@@ -68,13 +68,13 @@ public class LogEquipmentController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, 
+    public Result list(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "0") Integer pageSize, 
     		@RequestParam(defaultValue = "1970-1-1") Date startDate, 
     		@RequestParam(defaultValue = "2099-12-31") Date endDate, 
     		@RequestParam(required = false) String searchcontent) {
         
     	LOG.info("查询全部设备日志，startDate={},endDate={},searchcontent={}",startDate, endDate, searchcontent);
-    	PageInfo info = logEquipmentService.getAllEquipmentLogs(startDate, endDate, searchcontent, page, size);
+    	PageInfo info = logEquipmentService.getAllEquipmentLogs(startDate, endDate, searchcontent, pageNo, pageSize);
     	LOG.info("返回={}",info);
     	return ResultGenerator.genSuccessResult(info);
     }
