@@ -576,6 +576,8 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			LOG.debug("参数不正确：灯具编号为空");
 			return -3;
 		}
+		
+		LOG.info("校验完成");
 		return 0;
 	}
 
