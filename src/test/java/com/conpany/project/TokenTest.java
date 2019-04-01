@@ -16,8 +16,8 @@ public class TokenTest
 	{
 		
 		
-		String token = TokenUtils.getToken(1 + "");
-		System.out.println(token);
+//		String token = TokenUtils.getToken(1 + "");
+//		System.out.println(token);
 //		String token4 = TokenUtils.getToken(4 + "");
 //		System.out.println(token4);
 //		String token5 = TokenUtils.getToken(5 + "");
@@ -53,6 +53,11 @@ public class TokenTest
 //		
 //		List<User> parseArray = JSONArray.parseArray(json.toString(), User.class);
 //		System.out.println(parseArray);
+		
+		int res = 2;
+		if (res == 2) {
+			System.out.println("ssss");
+		}
 		
 	}
 }

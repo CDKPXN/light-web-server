@@ -430,11 +430,36 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		} else if ("offL".equals(type)) {
 			LOG.info("处理长离线事件");
 			handleOff(data, 6);
+		} else if ("fault".equals(type)) {
+			LOG.info("处理故障信息");
+			handleFault(data);
 		}
 		
 		return ResultGenerator.genSuccessResult();
 	}
 	
+	/**
+	 * 处理故障信息
+	 * @param data
+	 */
+	private void handleFault(String data) {
+		Light light = JSON.parseObject(data, Light.class);
+		String attrNum = light.getAttrNum();
+		LOG.info("灯具={}，离线或长时间离线",attrNum);
+		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
+		
+		if (light2 == null) {
+			lightMapper.insert(light2);
+			LOG.info("数据库不存在该灯具，已添加该灯具");
+		}
+		
+		Integer id = light2.getId();
+		light.setId(id);
+		
+		lightMapper.updateByPrimaryKeySelective(light);
+		
+	}
+
 	/**
 	 * 处理4G和GPS回复的数据
 	 * @param data

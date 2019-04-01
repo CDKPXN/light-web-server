@@ -23,7 +23,7 @@ public interface LightMapper extends Mapper<Light> {
 	 * @param searchcontent
 	 * @return
 	 */
-	public List<Light> selectAllLights(@Param("nodeids")Set<Integer> nodeids,@Param("searchcontent")String searchcontent);
+	public List<Light> selectAllLights(@Param("nodeids")Set<Integer> nodeids,@Param("searchcontent")String searchcontent, @Param("pageNo")Integer pageNo, @Param("pageSize")Integer pageSize);
 	
 	/**
 	 * 通过nodeid 查询灯具

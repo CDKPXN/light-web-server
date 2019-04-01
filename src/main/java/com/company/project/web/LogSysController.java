@@ -68,12 +68,12 @@ public class LogSysController {
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size,
+    public Result list(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "0") Integer pageSize,
     		           @RequestParam(defaultValue = "1997-1-1") Date startTime,@RequestParam(defaultValue = "2099-12-31") Date endTime,
     		           @RequestParam(required = false) String searchContent) {
         LOG.info("按条件查询系统日志  startTime={},endTime={},searchContent", startTime,endTime,searchContent);
     	
-    	PageInfo list = logSysService.findByFilter(startTime,endTime,searchContent,page,size);
+    	PageInfo list = logSysService.findByFilter(startTime,endTime,searchContent,pageNo,pageSize);
         
         return ResultGenerator.genSuccessResult(list);
     }
