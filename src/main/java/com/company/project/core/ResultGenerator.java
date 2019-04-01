@@ -21,14 +21,14 @@ public class ResultGenerator {
 
     public static <T> Result<T> genSuccessResult(T data) {
     	
-    	String jsondata = JSON.toJSONString(data);
+//    	String jsondata = JSON.toJSONString(data);
 //    	String encodejsondata = Base64.encodeBase64String(jsondata.getBytes()); // 之前进行Base64编码方式
-    	String encodeData = Base64.getEncoder().encodeToString(jsondata.getBytes());
+//    	String encodeData = Base64.getEncoder().encodeToString(jsondata.getBytes());
     	
         return new Result()
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
-                .setData(encodeData);
+                .setData(data);
     }
 
     public static Result genFailResult(String message) {
