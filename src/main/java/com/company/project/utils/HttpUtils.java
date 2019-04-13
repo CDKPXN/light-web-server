@@ -43,18 +43,18 @@ public class HttpUtils {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
 	
-	public static Result doGet(String url, Map<String, String> params) throws IOException, URISyntaxException {
+	public static Result doGet(String url, Map<String, Object> params) throws IOException, URISyntaxException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
         // 创建访问的地址
         URIBuilder uriBuilder = new URIBuilder(url);
         if (params != null) {
-            Set<Entry<String, String>> entrySet = params.entrySet();
-            for (Entry<String, String> entry : entrySet) {
+            Set<Entry<String, Object>> entrySet = params.entrySet();
+            for (Entry<String, Object> entry : entrySet) {
             	String key = entry.getKey();
-            	String value = entry.getValue();
+            	Object value = entry.getValue();
             	LOG.info("参数{}={}",key,value);
-                uriBuilder.setParameter(key, value);
+                uriBuilder.setParameter(key, value.toString());
             }
         }
 

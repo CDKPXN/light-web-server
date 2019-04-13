@@ -38,4 +38,7 @@ public interface LightService extends Service<Light> {
 	 */
 	Result getStatisticsInfo();
 
+	
+	Result saveLight(Light light);
+
 }

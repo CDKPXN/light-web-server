@@ -112,8 +112,8 @@ public class LOGAspect
 			Object[] args = joinPoint.getArgs();
 			SettingDto settingDto = (SettingDto)args[0];
 			Light light = settingDto.getData();
-			String content = JSON.toJSONString(light);
-			
+//			String content = JSON.toJSONString(light); // 原来获取content的方法
+			String content = light.toString(); // 存储汉字的数据
 			List<ResultDto> resultDtos = decodeResult(result);
 			getDevicedatas(resultDtos, content, devicedata, dataType, devicedatas);
 			
@@ -309,6 +309,7 @@ public class LOGAspect
 			return ;
 		}
 		
+		
 		String token = request.getHeader("token");
 		// 设备日志
 		LOG.info("--- 系统日志 ---");
@@ -431,10 +432,10 @@ public class LOGAspect
 			data = resultOjbect.get("data").toString();
 		}
 		
-//		String decodeData = Base64Utils.decode(data);
-//		LOG.info("解码后的内容={}",decodeData);
-//		List<ResultDto> list = JSON.parseArray(decodeData, ResultDto.class);
-		List<ResultDto> list = JSON.parseArray(data, ResultDto.class);
+		String decodeData = Base64Utils.decode(data);
+		LOG.info("解码后的内容={}",decodeData);
+		List<ResultDto> list = JSON.parseArray(decodeData, ResultDto.class);
+//		List<ResultDto> list = JSON.parseArray(data, ResultDto.class); // 测试时没有加上 Base64 编码
 		return list;
 	}
 	

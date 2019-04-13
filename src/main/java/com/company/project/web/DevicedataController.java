@@ -1,13 +1,17 @@
 package com.company.project.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.device.controller.DeviceController;
 import com.company.project.model.Devicedata;
 import com.company.project.service.DevicedataService;
+import com.company.project.utils.ListToStringUtils;
+import com.company.project.vo.DeviceDataVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -80,5 +84,34 @@ public class DevicedataController {
         return ResultGenerator.genSuccessResult(list);       
       
     
+    }
+    
+    /**
+     * 批量删除数据
+     */
+    @DeleteMapping
+    public Result delMore (@RequestBody DeviceDataVo deviceDataVo) {
+    	LOG.info("批量删除={}",deviceDataVo);
+
+    	if (deviceDataVo == null) {
+    		LOG.info("参数不正确");
+    		return ResultGenerator.genFailResult("参数不正确");
+    	}
+    	
+    	List<Integer> ids = deviceDataVo.getIds();
+    	
+    	if (ids == null || ids.isEmpty()) {
+    		LOG.info("参数不正确");
+    		return ResultGenerator.genFailResult("参数不正确");
+    	}
+    	
+    	String idsStr = ListToStringUtils.ListToString(ids);
+    	LOG.info("ids={}",idsStr);
+    	if (!StringUtils.isBlank(idsStr)) {
+    		devicedataService.deleteByIds(idsStr);
+    	}
+    	LOG.info("批量删除成功");
+    	
+    	return ResultGenerator.genSuccessResult();
     }
 }

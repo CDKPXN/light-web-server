@@ -38,7 +38,9 @@ public enum LOGEnum
 	USER_PUT("修改用户"),
 	USER_DELETE("删除用户"),
 	LOG_GET("查询日志"),
+	LOG_DELETE("删除日志"),
 	DEVICEDATA_GET("查询数据"), // 查询数据
+	DEVICEDATA_DELETE("删除数据"),
 	STATISTICS_GET("查询统计"),
 	ILLEGALOPERATION("未命名操作");
 	

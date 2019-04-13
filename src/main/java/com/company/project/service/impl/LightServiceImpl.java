@@ -94,7 +94,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		
 		if (light == null) {
 			LOG.info("该灯具不存在");
-			ResultGenerator.genFailResult("该灯具不存在");
+			return ResultGenerator.genFailResult("该灯具不存在");
 		}
 		
 		LightAndUsersVo lightAndUsersVo = new LightAndUsersVo();
@@ -503,6 +503,23 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		if (fid != -1) {
 			getUserIds(fid, userids);
 		}
+	}
+
+
+
+	/**
+	 * 添加灯具
+	 */
+	public Result saveLight(Light light) {
+		String attrNum = light.getAttrNum();
+		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
+		
+		if (light2 != null) {
+			return ResultGenerator.genFailResult("已经存在该编号");
+		}
+		int insert = lightMapper.insert(light);
+		
+		return ResultGenerator.genSuccessResult();
 	}
 	
 }

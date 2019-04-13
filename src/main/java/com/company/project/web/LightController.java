@@ -60,10 +60,9 @@ public class LightController {
     		return ResultGenerator.genFailResult("参数错误");
     	}
     	
-        lightService.save(light);
+        Result result = lightService.saveLight(light);
     	
-        LOG.info("添加灯具成功");
-        return ResultGenerator.genSuccessResult();
+        return result;
     }
 
     @DeleteMapping("/{id}")

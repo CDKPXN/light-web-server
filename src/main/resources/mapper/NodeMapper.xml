@@ -11,6 +11,7 @@
     <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
     <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
   
   <resultMap type="com.company.project.vo.NodeVo" id="nodeTree">
@@ -20,11 +21,12 @@
     <result column="ctime" jdbcType="TIMESTAMP" property="ctime" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
     <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <collection column="id" property="children" ofType="nodeVo" select="getNodeChildren"></collection>
   </resultMap>
   
   <sql id="BaseSql">
-    select id,nodename,fid,ctime,updatetime,is_del from node
+    select id,nodename,type,fid,ctime,updatetime,is_del from node
   </sql>
   
   

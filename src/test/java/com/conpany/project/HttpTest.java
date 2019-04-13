@@ -15,7 +15,7 @@ public class HttpTest {
 	
 	public static void testGet() throws IOException, URISyntaxException {
 		String url = "http://127.0.0.1:9091/api/v1/orders/1";
-		Map<String, String> params = new HashMap<>();
+		Map<String, Object> params = new HashMap<>();
 		Result doGet = HttpUtils.doGet(url, params);
 		System.out.println(doGet);
 	}

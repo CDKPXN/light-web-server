@@ -86,10 +86,14 @@ public class LogUtils
 		} else if (resource.startsWith("log")) { // 日志接口
 			if ("get".equals(method)) {
 				return LOGEnum.LOG_GET.toString();
+			} else if ("delete".equals(method)) {
+				return LOGEnum.LOG_DELETE.toString();
 			}
 		} else if (resource.startsWith("devicedata")) {
 			if ("get".equals(method)) {
 				return LOGEnum.DEVICEDATA_GET.toString();
+			} else if ("delete".equals(method)) {
+				return LOGEnum.DEVICEDATA_DELETE.toString();
 			}
 		}else if (resource.startsWith("statistcs")) {
 			if ("get".equals(method)) {

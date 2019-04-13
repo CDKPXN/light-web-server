@@ -24,6 +24,10 @@ public class Node {
     private Date ctime;
 
     /**
+     * 节点等级
+     */
+    private Integer type;
+    /**
      * 更新时间
      */
     private Date updatetime;
@@ -138,10 +142,18 @@ public class Node {
         this.isDel = isDel;
     }
 
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
-		return "Node [id=" + id + ", nodename=" + nodename + ", fid=" + fid + ", ctime=" + ctime + ", updatetime="
-				+ updatetime + ", isDel=" + isDel + "]";
+		return "Node [id=" + id + ", nodename=" + nodename + ", fid=" + fid + ", ctime=" + ctime + ", type=" + type
+				+ ", updatetime=" + updatetime + ", isDel=" + isDel + "]";
 	}
-    
+
 }

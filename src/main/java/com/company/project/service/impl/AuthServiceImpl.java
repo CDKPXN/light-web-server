@@ -91,6 +91,7 @@ public class AuthServiceImpl implements AuthService
 		authVo.setMsgauth(msgauth);
 		authVo.setToken(token);
 		authVo.setUid(uid);
+		authVo.setUsername(username);
 		
 		logSys.setResult("成功");
 		logSysMapper.insertSelective(logSys);

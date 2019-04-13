@@ -64,7 +64,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		
 		//根据id查user
 		User user = userMapper.findByUserId(id);
-		
+		LOG.info("查询到的用户={}",user);
 		UserVo userVo = new UserVo();
 		BeanUtils.copyProperties(user, userVo);
 		

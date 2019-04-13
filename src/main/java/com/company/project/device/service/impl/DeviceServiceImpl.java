@@ -2,6 +2,7 @@ package com.company.project.device.service.impl;
 
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -51,7 +52,6 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	
 	@Autowired
 	private HttpServletRequest request;
-	
 	
 	@Autowired
 	private LightMapper lightMapper;
@@ -531,6 +531,23 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			
 			if (insert == 1) {
 				LOG.info("--创建成功--");
+				
+				IoTDto gpsIoTDto = new IoTDto();
+				gpsIoTDto.setType("rgps");
+				gpsIoTDto.setAttrNum(attrNum);
+				Map gpsParams = packageParam(gpsIoTDto);
+				
+				IoTDto fgIoTDto = new IoTDto();
+				fgIoTDto.setType("r4g");
+				fgIoTDto.setAttrNum(attrNum);
+				Map fgParams = packageParam(fgIoTDto);
+				// 下发查询4G和下发查询GPS信息
+				try {
+					HttpUtils.doGet(URL, gpsParams);
+					HttpUtils.doGet(URL, fgParams);
+				} catch (IOException | URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 		} else {
 			LOG.info("灯具已经存在");
@@ -587,7 +604,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		List<String> attrNums = settingDto.getAttrNums();
 		
 		IoTDto ioTDto = new IoTDto();
-		ioTDto.setType(type);
+		ioTDto.setType("s" + type);
 		
 		try {
 			BeanUtils.copyProperties(ioTDto, light);
@@ -645,7 +662,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 				LOG.debug("参数不正确");
 				return -1;
 			}
-		} else if ("lihgt".equals(type)) {
+		} else if ("light".equals(type)) {
 			Integer df = light.getSetDayFrequency();
 			Integer ds = light.getSetDayState();
 			Integer nf = light.getSetNightFrequency();
@@ -687,6 +704,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			ioTDto.setAttrNum(attrNum);
 			
 			if ("heart".equals(type)) {
+				LOG.info("--刷新心跳--");
 				Light light = lightMapper.selectLightByAttrNum(attrNum);
 				Integer heartfrequency = light.getHeartfrequency();
 				ioTDto.setSetHeartfrequency(heartfrequency);
@@ -831,10 +849,10 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	private JSONObject decodeResult(Result result) {
 		String data = result.getData().toString();
 		
-//		String decodeData = Base64Utils.decode(data);
-//		LOG.info("解码后的内容={}",decodeData);
-//		Object parseData = JSON.parse(decodeData);
-		Object parseData = JSON.parse(data);
+		String decodeData = Base64Utils.decode(data);
+		LOG.info("解码后的内容={}",decodeData);
+		Object parseData = JSON.parse(decodeData);
+//		Object parseData = JSON.parse(data); // 测试时 没有用BASE64
 		JSONObject jsonData = JSON.parseObject(parseData.toString());
 		
 		LOG.info("jsonResult={}",jsonData);

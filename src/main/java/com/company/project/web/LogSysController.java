@@ -1,12 +1,15 @@
 package com.company.project.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.LogSys;
 import com.company.project.service.LogSysService;
+import com.company.project.utils.ListToStringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -76,5 +79,35 @@ public class LogSysController {
     	PageInfo list = logSysService.findByFilter(startTime,endTime,searchContent,pageNo,pageSize);
         
         return ResultGenerator.genSuccessResult(list);
+    }
+    
+    /**
+     * 批量删除系统日志
+     */
+    @DeleteMapping
+    public Result delMore (@RequestBody JSONObject jsonObject) {
+    	LOG.info("批量删除系统日志={}",jsonObject);
+    	
+    	if (jsonObject == null) {
+    		return ResultGenerator.genFailResult("参数错误");
+    	}
+    	
+    	List<Integer> ids = jsonObject.getObject("ids", List.class);
+    	
+    	if (ids == null || ids.isEmpty()) {
+    		return ResultGenerator.genFailResult("参数错误");
+    	}
+    	
+    	if (ids.isEmpty()) {
+    		return ResultGenerator.genFailResult("参数不正确");
+    	}
+    	
+    	String idsStr = ListToStringUtils.ListToString(ids);
+    	LOG.info("ids={}",idsStr);
+    	if (!StringUtils.isBlank(idsStr)) {
+    		logSysService.deleteByIds(idsStr);
+    	}
+    	
+    	return ResultGenerator.genSuccessResult();
     }
 }

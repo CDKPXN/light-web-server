@@ -1,5 +1,6 @@
 package com.company.project.utils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +33,11 @@ public class TokenUtils
 			Date iatDate = new Date();
 			
 			// 过期时间
-//			Calendar nowDate = Calendar.getInstance();
-//			nowDate.add(Calendar.HOUR, 2);
-//			Date expireTime = nowDate.getTime();
+			Calendar nowDate = Calendar.getInstance();
+			nowDate.add(Calendar.DATE, 7);
+			Date expireTime = nowDate.getTime();
+			
+			LOG.info("TOKEN过期时间={}",expireTime);
 			
 			// header
 			Map<String, Object> headerMap = new HashMap<>();
@@ -43,7 +46,7 @@ public class TokenUtils
 			
 			Builder tokenBuilder = JWT.create().withHeader(headerMap);
 			tokenBuilder.withIssuer("Service");
-			tokenBuilder.withExpiresAt(null);
+			tokenBuilder.withExpiresAt(expireTime);
 			tokenBuilder.withIssuedAt(iatDate);
 			tokenBuilder.withClaim("uid", uid);
 			

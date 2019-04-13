@@ -11,7 +11,14 @@ public class AuthVo
 	private Integer msgauth; // 消息权限
 	private Integer uid; // 用户id
 	private List<Authority> authority; // 节点及权限的list
+	private String username; // 用户名
 	
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	public Integer getUid() {
 		return uid;
 	}

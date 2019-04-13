@@ -20,6 +20,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ServiceException;
+import com.company.project.dao.UserMapper;
+import com.company.project.model.User;
 import com.company.project.utils.RequestUtils;
 import com.company.project.utils.TokenUtils;
 
@@ -27,6 +29,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -50,6 +53,9 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Value("${spring.profiles.active}")
     private String env;//当前激活的配置文件
 
+    @Autowired
+    private UserMapper userMapper;
+    
     //使用阿里 FastJson 作为JSON MessageConverter
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -198,6 +204,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     	Map<String, Claim> verifyToken = TokenUtils.verifyToken(token);
     	
     	if (verifyToken == null) {
+    		return false;
+    	}
+    	
+    	String uid = TokenUtils.getInfo(verifyToken, "uid");
+    	Integer userid = Integer.valueOf(uid);
+    	User user = userMapper.selectByPrimaryKey(userid);
+    	
+    	if (user == null) {
     		return false;
     	}
     	

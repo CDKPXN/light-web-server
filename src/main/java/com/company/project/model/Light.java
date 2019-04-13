@@ -951,5 +951,20 @@ public class Light {
 				+ setDayState + ", setNightState=" + setNightState + ", setDayBuzzer=" + setDayBuzzer
 				+ ", setNightBuzzer=" + setNightBuzzer + ", setHeartfrequency=" + setHeartfrequency + ", ctime=" + ctime
 				+ ", heartupdatetime=" + heartupdatetime + ", updatetime=" + updatetime + ", isDel=" + isDel + "]";
+		
+//		return "灯具id=" + id + ", 灯具名称=" + attrName + ", 灯具编号=" + attrNum + ", 手机号="
+//		+ attrPhone + ", 过期时间=" + attrDeadtime + ", 节点id=" + attrNodeid + ", 经度="
+//		+ attrLongitude + ", 纬度=" + attrLatitude + ", GPS上报经度=" + gpsLongitude + ", GPS上报纬度="
+//		+ gpsLatitude + ", GPS上报海拔=" + gpsElevation + ", GPS上报是否锁定=" + gpsLock + ", 4G强度=" + fgSignal
+//		+ ", fgIccid=" + fgIccid + ", totalElectricity=" + totalElectricity + ", lampsElectricity="
+//		+ lampsElectricity + ", totalVoltage=" + totalVoltage + ", lampsVoltage=" + lampsVoltage
+//		+ ", temperature=" + temperature + ", faultIndicate=" + faultIndicate + ", dayIndicate=" + dayIndicate
+//		+ ", heartfrequency=" + heartfrequency + ", lampDayFrequency=" + lampDayFrequency
+//		+ ", lampNightFrequency=" + lampNightFrequency + ", lampDayState=" + lampDayState + ", lampNightState="
+//		+ lampNightState + ", lampBuzzerDay=" + lampBuzzerDay + ", lampBuzzerNight=" + lampBuzzerNight
+//		+ ", 白天灯具频率设置值=" + setDayFrequency + ", 夜间灯具频率设置值=" + setNightFrequency + ", 白天灯具状态设定值="
+//		+ setDayState + ", setNightState=" + setNightState + ", setDayBuzzer=" + setDayBuzzer
+//		+ ", setNightBuzzer=" + setNightBuzzer + ", 心跳频率设置值=" + setHeartfrequency + ", ctime=" + ctime
+//		+ ", heartupdatetime=" + heartupdatetime + ", updatetime=" + updatetime + ", isDel=" + isDel + "]";
 	}
 }

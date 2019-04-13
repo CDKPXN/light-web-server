@@ -41,7 +41,7 @@
   
   <select id="findByUserId" resultMap="BaseResultMap" parameterType="Integer">
          select 
-             	id,realname,duty,company,phone,email,comment,mesg_authority
+             	id,username,realname,duty,company,phone,email,comment,mesg_authority
          from 
                user 
          where
