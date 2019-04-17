@@ -38,6 +38,8 @@ import com.company.project.model.LogEquipment;
 import com.company.project.model.LogSys;
 import com.company.project.model.User;
 import com.company.project.utils.Base64Utils;
+import com.company.project.utils.JSONUtils;
+import com.company.project.utils.LightKeyMap;
 import com.company.project.utils.LogUtils;
 import com.company.project.utils.RequestUtils;
 import com.company.project.utils.TokenUtils;
@@ -113,7 +115,10 @@ public class LOGAspect
 			SettingDto settingDto = (SettingDto)args[0];
 			Light light = settingDto.getData();
 //			String content = JSON.toJSONString(light); // 原来获取content的方法
-			String content = light.toString(); // 存储汉字的数据
+//			String content = light.toString();
+			// 存储汉字的数据
+			String content = getDeviceDataContent(light);
+			
 			List<ResultDto> resultDtos = decodeResult(result);
 			getDevicedatas(resultDtos, content, devicedata, dataType, devicedatas);
 			
@@ -127,14 +132,15 @@ public class LOGAspect
 			Light light = JSON.parseObject(data, Light.class);
 			String attrNum = light.getAttrNum();
 			light.setAttrNum(null);
-			String content = JSON.toJSONString(light);
+//			String content = JSON.toJSONString(light);
 			
+			String content = getDeviceDataContent(light);
 			
 			String resultStr = getResultStrWithData(result);
 			
 			// 构建devicedata 对象
 			devicedata.setContent(content);
-			devicedata.setCtime(new Date());
+//			devicedata.setCtime(new Date());
 			devicedata.setDataType(dataType);
 			devicedata.setIsDel((byte)0);
 			devicedata.setResult(resultStr);
@@ -149,6 +155,31 @@ public class LOGAspect
 		devicedataMapper.insertList(devicedatas);
 	}
 
+
+	/**
+	 * 将上报下发数据转换为汉字
+	 * @param light
+	 * @return
+	 */
+	private String getDeviceDataContent(Light light) {
+		
+		String lightJson = JSON.toJSONString(light);
+		JSONObject lightJsonObj = JSONObject.parseObject(lightJson);
+		// 转换值
+		JSONUtils.changeValue(lightJsonObj);
+		
+		// 转换key
+		
+		
+		LightKeyMap lightKeyMap = LightKeyMap.getInstance();
+		JSONObject contentJsonObj = JSONUtils.changeJsonObj(lightJsonObj, lightKeyMap.keyMap);
+		String content = contentJsonObj.toJSONString();
+		LOG.info("content===={}",content);
+		
+		return content;
+	}
+	
+	
 
 	/**
 	 * 处理设备日志
@@ -197,7 +228,7 @@ public class LOGAspect
 			String data = dataDto.getData();
 			
 			Light light = JSON.parseObject(data, Light.class);
-			LOG.info("接收数据转换成light={}",light);
+			LOG.info("AOP中接收数据转换成light={}",light);
 			
 			String attrNum = light.getAttrNum();
 			Integer faultIndicate = light.getFaultIndicate();

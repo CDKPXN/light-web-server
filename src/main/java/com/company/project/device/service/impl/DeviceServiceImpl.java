@@ -445,12 +445,13 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 	private void handleFault(String data) {
 		Light light = JSON.parseObject(data, Light.class);
 		String attrNum = light.getAttrNum();
-		LOG.info("灯具={}，离线或长时间离线",attrNum);
+		LOG.info("灯具={}，故障",attrNum);
 		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
 		
 		if (light2 == null) {
-			lightMapper.insert(light2);
-			LOG.info("数据库不存在该灯具，已添加该灯具");
+//			lightMapper.insert(light2);
+			LOG.info("数据库不存在该灯具，没有做任何处理");
+			return;
 		}
 		
 		Integer id = light2.getId();
@@ -479,7 +480,7 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		Light light = JSON.parseObject(data, Light.class);
 		String attrNum = light.getAttrNum();
 		light.setHeartupdatetime(new Date());
-		LOG.info("更新灯具编号心跳信息");
+		LOG.info("更新灯具编号={}心跳信息",attrNum);
 		updateLight(attrNum, light);
 	}
 	
@@ -532,25 +533,14 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			if (insert == 1) {
 				LOG.info("--创建成功--");
 				
-				IoTDto gpsIoTDto = new IoTDto();
-				gpsIoTDto.setType("rgps");
-				gpsIoTDto.setAttrNum(attrNum);
-				Map gpsParams = packageParam(gpsIoTDto);
-				
-				IoTDto fgIoTDto = new IoTDto();
-				fgIoTDto.setType("r4g");
-				fgIoTDto.setAttrNum(attrNum);
-				Map fgParams = packageParam(fgIoTDto);
-				// 下发查询4G和下发查询GPS信息
-				try {
-					HttpUtils.doGet(URL, gpsParams);
-					HttpUtils.doGet(URL, fgParams);
-				} catch (IOException | URISyntaxException e) {
-					e.printStackTrace();
-				}
+				// 查询4G
+				cmd("r4g", attrNum);
+				// 下发查询GPS
+				cmd("rgps",attrNum);
 			}
 		} else {
 			LOG.info("灯具已经存在");
+			
 			Condition condition = new Condition(Light.class);
 			Criteria criteria = condition.createCriteria();
 			criteria.andEqualTo("attrNum", attrNum);
@@ -558,6 +548,20 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 			LOG.info("更新attrNum={}灯具状态信息",attrNum);
 			LOG.info("灯具信息={}",light);
 			lightMapper.updateByConditionSelective(light, condition);
+			
+			Light light3 = lightMapper.selectLightByAttrNum(attrNum);
+			
+			String fgIccid = light3.getFgIccid();
+			if (StringUtils.isBlank(fgIccid)) {
+				LOG.info("4G信息为null,下发4G查询命令");
+				cmd("r4g", attrNum);
+			}
+			
+			String gpsLatitude = light3.getGpsLatitude();
+			if (StringUtils.isBlank(gpsLatitude)) {
+				LOG.info("GPS信息为null,下发GPS查询命令");
+				cmd("rgps", attrNum);
+			}
 		}
 	}
 
@@ -871,6 +875,24 @@ public class DeviceServiceImpl extends AbstractService<Devicedata> implements De
 		Map paramMap = JSON.parseObject(jsonString, Map.class);
 		LOG.info("查询指令中的参数Map={}",paramMap);
 		return paramMap;
+	}
+	
+	/**
+	 * 下发命令方法（没有参数的命令）
+	 * @param type
+	 * @param attrNum
+	 */
+	private void cmd (String type, String attrNum) {
+		IoTDto gpsIoTDto = new IoTDto();
+		gpsIoTDto.setType(type);
+		gpsIoTDto.setAttrNum(attrNum);
+		Map gpsParams = packageParam(gpsIoTDto);
+		
+		try {
+			HttpUtils.doGet(URL, gpsParams);
+		} catch (IOException | URISyntaxException e) {
+			LOG.debug("下发[{}]失败",type);
+		}
 	}
 
 }

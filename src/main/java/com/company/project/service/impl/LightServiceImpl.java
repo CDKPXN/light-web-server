@@ -213,6 +213,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		LOG.info("查询权限内的节点的子节点--={}",authNodeids);
 		
 		LightStatisticsVo lightStatisticsVo = new LightStatisticsVo();
+		lightStatisticsVo.setOffLine(0);
 		
 		List<Light> lights = lightMapper.selectLightsByNodeids(authNodeids);
 		LOG.info("权限内的灯具={}",lights);
@@ -220,6 +221,8 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		if (lights.isEmpty()) {
 			return ResultGenerator.genSuccessResult();
 		}
+		
+		lightStatisticsVo.setCounts(lights.size());
 		// 统计信息
 		
 		Faultindication faultindication_2 = new Faultindication(2,0); // 主通道故障
@@ -274,6 +277,12 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 					Integer count = faultindication_4.getCount();
 					count++;
 					faultindication_4.setCount(count);
+				}
+				
+				if (faultIndicate == 4 || faultIndicate == 5 || faultIndicate == 6) {
+					Integer offLine = lightStatisticsVo.getOffLine();
+					offLine ++;
+					lightStatisticsVo.setOffLine(offLine);
 				}
 			}
 			
@@ -517,7 +526,7 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		if (light2 != null) {
 			return ResultGenerator.genFailResult("已经存在该编号");
 		}
-		int insert = lightMapper.insert(light);
+		int insert = lightMapper.insertSelective(light);
 		
 		return ResultGenerator.genSuccessResult();
 	}

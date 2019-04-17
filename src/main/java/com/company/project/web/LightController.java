@@ -79,6 +79,7 @@ public class LightController {
     	if (null == light || null == light.getId()) {
     		return ResultGenerator.genFailResult("参数错误");
     	}
+    	light.setUpdatetime(new Date());
         lightService.update(light);
         return ResultGenerator.genSuccessResult();
     }

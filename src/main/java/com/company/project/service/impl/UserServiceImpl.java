@@ -116,6 +116,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 			User user = new User();
 			BeanUtils.copyProperties(userVo, user);
 			user.setUserpass("12345678");
+			user.setCtime(new Date());
 			LOG.info("copyPropertiest之后user={}",user);
 			save(user);
 			
@@ -144,6 +145,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 		User user = new User();
 		BeanUtils.copyProperties(userVo, user);
 		LOG.info("copyProperties后的user={}",user);
+//		user.setUpdatetime(new Date());
 		
 		try {
 			userMapper.updateByPrimaryKeySelective(user);
@@ -172,6 +174,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 				
 				Authority authority1 = new Authority();
 				authority1.setAuthority(authority);
+				authority1.setUpdatetime(new Date());
 				authorityMapper.updateByConditionSelective(authority1, condition);
 			}
 			

@@ -9,6 +9,21 @@ public class LightStatisticsVo {
 	private List<Buzzerstate> buzzerstates;
 	private List<Faultindication> faultindications;
 	
+	private Integer counts; // 总数
+	private Integer offLine; // 离线
+	
+	public Integer getOffLine() {
+		return offLine;
+	}
+	public void setOffLine(Integer offLine) {
+		this.offLine = offLine;
+	}
+	public Integer getCounts() {
+		return counts;
+	}
+	public void setCounts(Integer counts) {
+		this.counts = counts;
+	}
 	public List<Lightfrequency> getLightfrequencies()
 	{
 		return lightfrequencies;
@@ -42,10 +57,10 @@ public class LightStatisticsVo {
 		this.faultindications = faultindications;
 	}
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "LightStatisticsVo [lightfrequencies=" + lightfrequencies + ", lightStates=" + lightStates
-				+ ", buzzerstates=" + buzzerstates + ", faultindications=" + faultindications + "]";
+				+ ", buzzerstates=" + buzzerstates + ", faultindications=" + faultindications + ", counts=" + counts
+				+ ", offLine=" + offLine + "]";
 	}
 	
 }
