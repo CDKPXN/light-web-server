@@ -194,7 +194,9 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 	 */
 	public Result getStatisticsInfo() {
 		Map<String, Object> authMap = getAuthority();
+		
 		Integer auth = (Integer)authMap.get("auth");
+		LOG.info("auth=={}",auth);
 		if (auth < 1) {
 			return ResultGenerator.genFailResult("没有查看权限");
 		}
@@ -464,11 +466,11 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		Map<String, Claim> claims = TokenUtils.verifyToken(token);
 		String uid = TokenUtils.getInfo(claims, "uid");
 		int id = Integer.parseInt(uid);
-		
+		LOG.info("用户id=[{}]",uid);
 		map.put("uid", uid);
 		
 		List<Authority> authorities = authorityMapper.selectAuthorityByUid(id);
-		
+		LOG.info("权限==[{}]",authorities);
 		if (!authorities.isEmpty()) {
 			Authority authority = authorities.get(0);
 			Integer auth = authority.getAuthority();
@@ -482,7 +484,11 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 			});
 			
 			map.put("nodeids", nodeids);
-		}
+		} 
+//		else {
+//			map.put("auth", 0);
+//			map.put("nodeids", new ArrayList<Integer>().add(0));
+//		}
 		
 		return map;
 	}
@@ -523,11 +529,17 @@ public class LightServiceImpl extends AbstractService<Light> implements LightSer
 		String attrNum = light.getAttrNum();
 		Light light2 = lightMapper.selectLightByAttrNum(attrNum);
 		
-		if (light2 != null) {
+		if (light2 != null && !StringUtils.isBlank(light2.getAttrName())) {
 			return ResultGenerator.genFailResult("已经存在该编号");
 		}
-		int insert = lightMapper.insertSelective(light);
-		
+		Integer id = light.getId();
+		if (id != null && id > 0) {
+			LOG.info("更新了灯具");
+			lightMapper.updateByPrimaryKeySelective(light);
+		} else {
+			lightMapper.insertSelective(light);
+		}
+			
 		return ResultGenerator.genSuccessResult();
 	}
 	

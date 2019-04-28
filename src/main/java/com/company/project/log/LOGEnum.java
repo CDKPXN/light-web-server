@@ -2,6 +2,7 @@ package com.company.project.log;
 
 public enum LOGEnum
 {
+	STATISTIC("统计灯具状态"),
 	LIGHT_ON("灯具上线"),
 	LIGHT_OFF("灯具下线"),
 	LIGHT_OFF_L("灯具长时间离线"),
@@ -33,6 +34,7 @@ public enum LOGEnum
 	NODE_DELETE("删除节点"), // 修改节点
 	MSG_SEND("发送消息"),
 	MSG_ACCEPT("接收消息"),
+	MSG_GET("查看消息"),
 	USER_GET("查询用户"),
 	USER_POST("添加用户"),
 	USER_PUT("修改用户"),

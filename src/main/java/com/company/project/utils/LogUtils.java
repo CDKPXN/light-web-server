@@ -95,11 +95,16 @@ public class LogUtils
 			} else if ("delete".equals(method)) {
 				return LOGEnum.DEVICEDATA_DELETE.toString();
 			}
-		}else if (resource.startsWith("statistcs")) {
+		}else if (resource.startsWith("statistics")) {
 			if ("get".equals(method)) {
-				return LOGEnum.DEVICEDATA_GET.toString();
+				return LOGEnum.STATISTIC.toString();
 			}
-		}
+		} 
+//		else if (resource.startsWith("message")) {
+//			if ("get".equals(method)) {
+//				return LOGEnum.MSG_GET.toString();
+//			}
+//		}
 		
 		return LOGEnum.ILLEGALOPERATION.toString();
 	}

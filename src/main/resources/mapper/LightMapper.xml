@@ -67,7 +67,7 @@
 		l.heartupdatetime,l.lamps_electricity,l.lamps_voltage,l.lamp_buzzer_day,l.lamp_buzzer_night,l.lamp_day_frequency,
 		l.lamp_day_state,l.lamp_night_frequency,l.lamp_night_state,l.set_day_buzzer,l.set_day_frequency,l.set_day_state,
 		l.set_heartfrequency,l.set_night_buzzer,l.set_night_frequency,l.set_night_state,l.temperature,l.total_electricity,
-		l.total_voltage 
+		l.total_voltage,l.updatetime
 	from 
 		light l
 	<where>

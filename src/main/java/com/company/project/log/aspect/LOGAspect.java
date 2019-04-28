@@ -140,7 +140,7 @@ public class LOGAspect
 			
 			// 构建devicedata 对象
 			devicedata.setContent(content);
-//			devicedata.setCtime(new Date());
+			devicedata.setCtime(new Date());
 			devicedata.setDataType(dataType);
 			devicedata.setIsDel((byte)0);
 			devicedata.setResult(resultStr);
@@ -340,6 +340,9 @@ public class LOGAspect
 			return ;
 		}
 		
+		if (uri.contains("message")) {
+			return ;
+		}
 		
 		String token = request.getHeader("token");
 		// 设备日志
