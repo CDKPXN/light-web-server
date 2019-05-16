@@ -336,7 +336,12 @@ public class LOGAspect
 		String method = RequestUtils.getMethod(request);
 		
 		// 登录时没有Token，所以登录的日志单独做，这里排除登录
-		if (uri.contains("auth") && "post".equals(method.toLowerCase())) {
+		method = method.toLowerCase();
+		if (uri.contains("auth") && "post".equals(method)) {
+			return ;
+		}
+		
+		if ("get".equals(method)) {
 			return ;
 		}
 		
@@ -345,7 +350,7 @@ public class LOGAspect
 		}
 		
 		String token = request.getHeader("token");
-		// 设备日志
+		// 系统日志
 		LOG.info("--- 系统日志 ---");
 		LogSys sysLog = getSysLog(uri, method, token, request);
 		setResult(result, sysLog);

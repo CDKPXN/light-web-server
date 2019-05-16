@@ -244,10 +244,12 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 	@Override
 	public Integer findUsername(String username) {
         String un = userMapper.findUsername(username);
-        
+        LOG.info("查询={}",un);
         if(un != null) {
+        	LOG.info("已存在该用户");
         	return -1;
         }
+        LOG.info("不存在该用户");
 		return 0;
 	}
 	

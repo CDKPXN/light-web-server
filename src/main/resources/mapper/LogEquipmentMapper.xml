@@ -35,5 +35,6 @@
   	    or lampname like CONCAT('%',#{sc},'%'))
   	  </if>
   	</where>
+  	 order by id desc
   </select>
 </mapper>
